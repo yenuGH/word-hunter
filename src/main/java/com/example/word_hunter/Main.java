@@ -12,7 +12,7 @@ public class Main extends Application {
     private final static String TITLE = "Word Hunter";
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("WordHunter.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("ServerPage.fxml"));
         Scene scene = new Scene(root);
         stage.setTitle(TITLE);
         stage.setScene(scene);

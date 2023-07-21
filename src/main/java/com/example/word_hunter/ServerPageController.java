@@ -11,12 +11,12 @@ import java.util.List;
 
 public class ServerPageController {
     @FXML
-    Label serverIPLabel;
+    public Label serverIPLabel;
 
     @FXML
-    ListView<String> playerView;
+    public ListView<String> playerView;
 
-    ObservableList<String> playerList = FXCollections.observableList(new ArrayList<>());
+    private ObservableList<String> playerList = FXCollections.observableList(new ArrayList<>());
 
     @FXML
     public void initialize(){
