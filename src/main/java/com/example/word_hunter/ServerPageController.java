@@ -24,8 +24,8 @@ public class ServerPageController {
         for (int i = 0; i < 10000; i++){
             playerList.add("Naoto");
             playerList.add("Kevin");
-            playerList.add("Jonnacan");
-            playerList.add("Lyyn");
+            playerList.add("Jonathan");
+            playerList.add("Lynn");
             playerList.add("Joel");
         }
     }
