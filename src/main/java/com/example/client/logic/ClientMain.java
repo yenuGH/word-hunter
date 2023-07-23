@@ -87,7 +87,7 @@ class ClientListening extends Thread
         InputStream is;
         try
         {
-            sock.setSoTimeout(2 * 10);
+            sock.setSoTimeout(2 * ServerMain.heartBeatInterval);
             is = sock.getInputStream();
         }
         catch (IOException e)
@@ -155,7 +155,7 @@ class ClientListening extends Thread
             gotColorId = true;
             // setup keep alive
             heartBeatTimer = new Timer();
-            heartBeatTimer.schedule(new HeartBeat(), 10);
+            heartBeatTimer.schedule(new HeartBeat(), ServerMain.heartBeatInterval);
         }
 
         // call function mapped to message
@@ -214,7 +214,7 @@ class ClientListening extends Thread
 
     public void heartBeatAck(String input)
     {
-        heartBeatTimer.schedule(new HeartBeat(), 10);
+        heartBeatTimer.schedule(new HeartBeat(), ServerMain.heartBeatInterval);
     }
 
 }
