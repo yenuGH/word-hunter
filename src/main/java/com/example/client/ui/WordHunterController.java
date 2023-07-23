@@ -1,4 +1,4 @@
-package com.example.word_hunter;
+package com.example.client.ui;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;

@@ -1,4 +1,4 @@
-package com.example.word_hunter;
+package com.example.client.ui;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Transition;
