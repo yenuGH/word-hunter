@@ -45,6 +45,7 @@ public class WordPane extends StackPane {
 
     // Set the word of the label
     public void setWord(String word){
+        this.word = word;
         this.label.setText(word);
     }
 
