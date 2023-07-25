@@ -1,9 +1,8 @@
-package com.example.client.ui;
+package com.wordhunter.client.ui;
 
-import com.example.client.logic.ClientMain;
+import com.wordhunter.client.logic.ClientMain;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;

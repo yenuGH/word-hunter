@@ -1,4 +1,4 @@
-package com.example.server;
+package com.wordhunter.server;
 
 public enum ServerState {
     STARTED,
