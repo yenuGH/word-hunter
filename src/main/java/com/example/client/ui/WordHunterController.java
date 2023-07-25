@@ -1,6 +1,7 @@
 package com.example.client.ui;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 public class WordHunterController {
@@ -9,6 +10,9 @@ public class WordHunterController {
 
     @FXML
     public Label healthBar;
+
+    @FXML
+    public TextField userInput;
 
     @FXML
     public void initialize() throws InterruptedException {
