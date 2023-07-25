@@ -13,17 +13,9 @@ public class Main extends Application {
     private final static String TITLE = "Word Hunter";
     @Override
     public void start(Stage stage) throws IOException, InterruptedException {
-        Parent root = FXMLLoader.load(getClass().getResource("ServerPage.fxml"));
-        Scene scene = new Scene(root);
-        stage.setTitle(TITLE);
-        stage.setScene(scene);
-        stage.show();
-
-        // Make not resizable
-        stage.setResizable(false);
-
-        ClientMain clientMain = new ClientMain();
-
+        SceneController sceneController = SceneController.getInstance();
+        sceneController.setStage(stage);
+        sceneController.showStartPage();
     }
 
     public static void main(String[] args) {

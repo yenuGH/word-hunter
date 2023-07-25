@@ -10,10 +10,12 @@ package com.example.client.logic;
  * - handles server disconnect by exiting
  */
 
+import com.example.client.ui.SceneController;
 import com.example.server.ServerMain;
 import com.example.server.ServerState;
 import com.example.server.conversion.PlayerConversion;
 import com.example.server.models.Player;
+import javafx.application.Platform;
 
 import java.io.*;
 import java.net.Socket;
@@ -75,6 +77,10 @@ class ClientListening extends Thread
         messageToCallback.put("playerDisconnect", ClientListening::playerDisconnect);
         messageToCallback.put("error", ClientListening::error);
         messageToCallback.put("", ClientListening::heartBeatAck);
+        messageToCallback.put("gameStart", ClientListening::displayGameScreen);
+        messageToCallback.put("gameOver", ClientListening::endGameScreen);
+        messageToCallback.put("addNewWord", ClientListening::processNewWord);
+
     }
 
     /**
@@ -217,6 +223,48 @@ class ClientListening extends Thread
         heartBeatTimer.schedule(new HeartBeat(), ServerMain.heartBeatInterval);
     }
 
+    public void displayGameScreen(String input) {
+        // TODO: display all words onto the grid, and start the timer of each word
+
+        // TODO: replace the below code with event handling when user presses any key
+        System.out.print("Enter the word:");  //
+        //Scanner sc = new Scanner(System.in);
+        //char ch = sc.next().charAt(0);
+
+        //
+        Platform.runLater(() -> {
+            SceneController.getInstance().showGamePage();
+        });
+
+
+        /*int matchingWordIdx = findMatchingWord('d');
+        if (matchingWordIdx != -1) {
+            // If matching, sending message to server to lock the word
+            ClientMain.wordsList.elementAt(matchingWordIdx).setState("RESERVED");
+            String message = "reserveWordByIndex" + ServerMain.messageDelimiter
+                    + matchingWordIdx + ServerMain.messageDelimiter
+                    + WordConversion.fromWord(ClientMain.wordsList.elementAt(matchingWordIdx));
+            try {
+                System.out.println(message);
+                ClientMain.sendMsgToServer(message);
+            } catch (IOException e) {
+                System.out.println("failed to send index of the reserved word");
+            }
+        } else {
+            System.out.println("cannot find word matching");
+        }*/
+    }
+
+    public void endGameScreen(String input) {
+        Platform.runLater(() -> {
+            SceneController.getInstance().closeStage();
+        });
+    }
+
+    public void processNewWord(String input) {
+        //nothing so far
+    }
+
 }
 
 
@@ -227,6 +275,7 @@ class ClientListening extends Thread
  */
 public class ClientMain
 {
+    private static ClientMain clientMainInstance = null;
     // server/connection variables
     public static final int reconnectMaxAttempt = 5;
     public static int reconnectAttempts = 0;
@@ -238,18 +287,37 @@ public class ClientMain
     public String username = "test";        // temporary: entered by client later. move to player class?
     public String colorId = "";
 
+    // Singleton
+    public static ClientMain getInstance(String address) {
+        if (clientMainInstance == null) {
+            try {
+                clientMainInstance = new ClientMain(address);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return clientMainInstance;
+    }
+
     /**
      * ClientMain()
      * entry point -> choose start server or join as client
      */
-    public ClientMain() throws IOException, InterruptedException
+    public ClientMain(String address) throws IOException, InterruptedException
     {
-        // temp for testing. replace with UI prompt?
+        if (Objects.equals(address, ""))
+            serverIP = "localhost";
+        /*if (Objects.equals(input, "createServer")) {
+            createServer();
+        }
+        connectServer(false);
+
+         temp for testing. replace with UI prompt?
         System.out.println("enter serverip: (enter nothing for localhost)");
         Scanner myObj = new Scanner(System.in);
         serverIP = myObj.nextLine();
-        if(Objects.equals(serverIP, ""))
-            serverIP = "localhost";
 
         System.out.println("1 to start server: (enter anything else to connect as client)");
         String input = myObj.nextLine();
@@ -259,7 +327,7 @@ public class ClientMain
         {
             createServer();
         }
-        connectServer(false);
+        connectServer(false);*/
     }
 
     /**

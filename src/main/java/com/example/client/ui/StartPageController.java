@@ -1,8 +1,12 @@
 package com.example.client.ui;
 
+import com.example.client.logic.ClientMain;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.TextField;
+
+import java.io.IOException;
 
 public class StartPageController {
     @FXML
@@ -10,11 +14,29 @@ public class StartPageController {
 
     @FXML
     public void createButtonClicked(ActionEvent e){
-        System.out.println("User pressed create");
+        ClientMain clientMain = ClientMain.getInstance("localhost");
+        try {
+            clientMain.createServer();
+            clientMain.connectServer(false);
+
+            SceneController.getInstance().showWaitingPage();
+        } catch (InterruptedException | IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @FXML
     public void joinButtonClicked(ActionEvent e){
-        System.out.println(textField.getText());
+        ClientMain clientMain = ClientMain.getInstance(textField.getText());
+        try {
+            clientMain.connectServer(false);
+            SceneController.getInstance().showWaitingPage();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void switchWaitingPage(){
+
     }
 }
