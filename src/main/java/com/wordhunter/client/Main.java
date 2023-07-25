@@ -1,10 +1,7 @@
-package com.example.client.ui;
+package com.wordhunter.client;
 
-import com.example.client.logic.ClientMain;
+import com.wordhunter.client.ui.SceneController;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;

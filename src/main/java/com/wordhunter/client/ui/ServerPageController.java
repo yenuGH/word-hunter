@@ -1,4 +1,4 @@
-package com.example.client.ui;
+package com.wordhunter.client.ui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,7 +7,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ServerPageController {
     @FXML

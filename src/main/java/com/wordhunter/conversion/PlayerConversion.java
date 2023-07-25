@@ -1,8 +1,8 @@
-package com.example.server.conversion;
+package com.wordhunter.conversion;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.example.server.models.Player;
+import com.wordhunter.models.Player;
 
 import java.util.Vector;
 

@@ -1,4 +1,4 @@
-package com.example.server.models;
+package com.wordhunter.models;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.Objects;
