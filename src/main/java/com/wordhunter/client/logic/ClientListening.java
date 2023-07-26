@@ -2,7 +2,9 @@ package com.wordhunter.client.logic;
 
 import com.wordhunter.client.ui.SceneController;
 import com.wordhunter.conversion.PlayerConversion;
+import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Player;
+import com.wordhunter.models.Word;
 import com.wordhunter.server.ServerMain;
 import javafx.application.Platform;
 
@@ -45,7 +47,6 @@ class ClientListening extends Thread {
         messageToCallback.put("gameStart", ClientListening::displayGameScreen);
         messageToCallback.put("gameOver", ClientListening::endGameScreen);
         messageToCallback.put("addNewWord", ClientListening::processNewWord);
-
     }
 
     /**
@@ -175,11 +176,6 @@ class ClientListening extends Thread {
         // TODO: display all words onto the grid, and start the timer of each word
 
         // TODO: replace the below code with event handling when user presses any key
-        System.out.print("Enter the word:");  //
-        //Scanner sc = new Scanner(System.in);
-        //char ch = sc.next().charAt(0);
-
-        //
         Platform.runLater(() -> {
             SceneController.getInstance().showGamePage();
         });
@@ -203,6 +199,20 @@ class ClientListening extends Thread {
         }*/
     }
 
+    /**
+     * Return index of the word which first character is pressed by the client
+     * and the word is not reserved
+     * @param ch
+     * @return
+     */
+    private int findMatchingWord(char ch) {
+        for (int i = 0; i < ClientMain.wordsList.size(); i++) {
+            if (ch == ClientMain.wordsList.elementAt(i).getWord().charAt(0))
+                return i;
+        }
+        return -1;
+    }
+
     public void endGameScreen(String input) {
         Platform.runLater(() -> {
             SceneController.getInstance().closeStage();
@@ -210,7 +220,10 @@ class ClientListening extends Thread {
     }
 
     public void processNewWord(String input) {
-        //nothing so far
+        int index = Integer.parseInt(input.split(ServerMain.messageDelimiter)[1]);
+        String word = input.split(ServerMain.messageDelimiter)[2];
+        Word newWord = WordConversion.toWord(word);
+        ClientMain.wordsList.add(index, newWord);
     }
 
 }

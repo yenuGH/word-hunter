@@ -13,7 +13,9 @@ package com.wordhunter.server;
  */
 
 
+import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Player;
+import com.wordhunter.models.Word;
 
 import java.io.*;
 import java.net.Socket;
@@ -49,7 +51,9 @@ public class ServerMain extends Thread
     public static long timerStartTime;
 
     // game variables
-    public final static int wordLimit = 10;
+    public final static int wordLimit = 15;
+    public static final List<String> dictionary = new ArrayList<>();
+    public static final List<String> wordsList = new ArrayList<>();
 
     /**
      * main()
@@ -58,6 +62,7 @@ public class ServerMain extends Thread
     public void run()
     {
         System.out.println("starting server");
+        readDictionary();
 
         // start thread to start accepting clients
         ServerAcceptClients thread = new ServerAcceptClients();
@@ -76,6 +81,10 @@ public class ServerMain extends Thread
         }
 
         System.out.println("server game start");
+        // generating words and broadcast each word to all client
+        for (int i = 0; i < wordLimit; i++) {
+            generateNewWord(i);
+        }
 
         broadcast("gameStart" + messageDelimiter
                 + "gameTimer" + messageDelimiter
@@ -97,6 +106,44 @@ public class ServerMain extends Thread
         // TODO: add scores to message
         broadcast("gameOver");
         // TODO: clean up sockets (from client side? add option to start new game?)
+    }
+
+    private void readDictionary() {
+        try {
+            File file = new File("src/main/java/com/wordhunter/server/dictionary.txt");
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                dictionary.add(line);
+            }
+            scanner.close();
+        } catch (Exception e) {
+            System.out.println("failed open dictionary.txt file");
+        }
+    }
+
+    public void generateNewWord(int index)
+    {
+        Random rand = new Random(System.currentTimeMillis());
+        String newWord = dictionary.get(rand.nextInt(dictionary.size()));
+        while (checkDuplicateChar(newWord, wordsList)) {
+            newWord = dictionary.get(rand.nextInt(dictionary.size()));
+        }
+        wordsList.add(newWord);
+
+        // Broadcast each word to all clients
+        Word word = new Word(newWord, "OPEN");
+        broadcast("addNewWord" + messageDelimiter + index + messageDelimiter + WordConversion.fromWord(word));
+    }
+
+    private boolean checkDuplicateChar(String word, List<String> list)
+    {
+        for (int i = 0; i < list.size(); i++) {
+            if (word.charAt(0) == list.get(i).charAt(0)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

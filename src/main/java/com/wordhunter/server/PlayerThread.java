@@ -54,6 +54,7 @@ class PlayerThread extends Thread {
 
         // setup message callbacks
         messageToCallback.put("", PlayerThread::handleHeartBeat);
+        messageToCallback.put("reserveWordByIndex", PlayerThread::handleReserveWord);
 
         heartBeatHandle = scheduler.scheduleAtFixedRate(disconnectRunnable,
                 2 * ServerMain.heartBeatInterval,
@@ -139,5 +140,13 @@ class PlayerThread extends Thread {
      */
     public void handleHeartBeat(String input) {
         ServerMain.sendMessageToClient(sock, "");
+    }
+
+    public void handleReserveWord(String input) {
+        int index = Integer.parseInt(input.split(ServerMain.messageDelimiter)[1]);
+        String word = input.split(ServerMain.messageDelimiter)[2];
+        System.out.println("Reserved word at " + index + ": " + word);
+
+        ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + index + ServerMain.messageDelimiter + word);
     }
 }
