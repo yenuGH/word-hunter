@@ -44,6 +44,8 @@ class HeartBeat extends TimerTask {
 }
 
 
+
+
 /**
  * ClientMain
  *
@@ -64,10 +66,10 @@ public class ClientMain
     public String colorId = "";
 
     // Singleton
-    public static ClientMain getInstance(String address) {
+    public static ClientMain getInstance() {
         if (clientMainInstance == null) {
             try {
-                clientMainInstance = new ClientMain(address);
+                clientMainInstance = new ClientMain();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -81,10 +83,8 @@ public class ClientMain
      * ClientMain()
      * entry point -> choose start server or join as client
      */
-    public ClientMain(String address) throws IOException, InterruptedException
+    public ClientMain() throws IOException, InterruptedException
     {
-        if (Objects.equals(address, ""))
-            serverIP = "localhost";
         /*if (Objects.equals(input, "createServer")) {
             createServer();
         }
@@ -104,6 +104,13 @@ public class ClientMain
             createServer();
         }
         connectServer(false);*/
+    }
+
+    public void setAddress(String address) {
+        if (Objects.equals(address, ""))
+            serverIP = "localhost";
+        else
+            serverIP = address;
     }
 
     /**
@@ -135,7 +142,7 @@ public class ClientMain
         sock.setSoTimeout(5000);
 
         String message = "username" + ServerMain.messageDelimiter
-                        + username;
+                + username;
         if(reconnect && !colorId.isEmpty())
         {
             reconnectAttempts++;
