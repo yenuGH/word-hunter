@@ -52,8 +52,9 @@ public class ServerMain extends Thread
 
     // game variables
     public final static int wordLimit = 15;
-    public static final List<String> dictionary = new ArrayList<>();
-    public static final List<String> wordsList = new ArrayList<>();
+    public final static int dimension = 5;
+    public static final Vector<String> dictionary = new Vector<>();
+    public static final Vector<Word> wordsList = new Vector<>();
 
     /**
      * main()
@@ -108,7 +109,12 @@ public class ServerMain extends Thread
         // TODO: clean up sockets (from client side? add option to start new game?)
     }
 
-    private void readDictionary() {
+    // TODO: put methods into different class
+    /**
+     * Load all words in dictionary when server starts
+     */
+    private void readDictionary()
+    {
         try {
             File file = new File("src/main/java/com/wordhunter/server/dictionary.txt");
             Scanner scanner = new Scanner(file);
@@ -118,10 +124,14 @@ public class ServerMain extends Thread
             }
             scanner.close();
         } catch (Exception e) {
-            System.out.println("failed open dictionary.txt file");
+            System.out.println("failed to open dictionary.txt file");
         }
     }
 
+    /**
+     * Generate a new Word object and broadcast it to all clients with the associated index
+     * @param index index of Word in Vector<Word> wordsList
+     */
     public void generateNewWord(int index)
     {
         Random rand = new Random(System.currentTimeMillis());
@@ -129,17 +139,34 @@ public class ServerMain extends Thread
         while (checkDuplicateChar(newWord, wordsList)) {
             newWord = dictionary.get(rand.nextInt(dictionary.size()));
         }
-        wordsList.add(newWord);
 
-        // Broadcast each word to all clients
-        Word word = new Word(newWord, "OPEN");
+        int x = rand.nextInt(dimension);
+        int y = rand.nextInt(dimension);
+        while (checkOccupiedSpot(x, y, wordsList)) {
+            x = rand.nextInt(dimension);
+            y = rand.nextInt(dimension);
+        }
+
+        // Broadcast new word to all clients
+        Word word = new Word(newWord, x, y);
+        wordsList.add(word);
         broadcast("addNewWord" + messageDelimiter + index + messageDelimiter + WordConversion.fromWord(word));
     }
 
-    private boolean checkDuplicateChar(String word, List<String> list)
+    private boolean checkDuplicateChar(String word, Vector<Word> wordsList)
     {
-        for (int i = 0; i < list.size(); i++) {
-            if (word.charAt(0) == list.get(i).charAt(0)) {
+        for (int i = 0; i < wordsList.size(); i++) {
+            if (word.charAt(0) == wordsList.get(i).getWord().charAt(0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean checkOccupiedSpot(int x, int y, Vector<Word> wordsList)
+    {
+        for (int i = 0; i < wordsList.size(); i++) {
+            Word word = wordsList.get(i);
+            if (x == word.getPosX() && y == word.getPosY()) {
                 return true;
             }
         }

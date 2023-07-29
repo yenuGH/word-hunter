@@ -4,7 +4,6 @@ import com.wordhunter.client.ui.SceneController;
 import com.wordhunter.conversion.PlayerConversion;
 import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Player;
-import com.wordhunter.models.Word;
 import com.wordhunter.server.ServerMain;
 import javafx.application.Platform;
 
@@ -173,44 +172,10 @@ class ClientListening extends Thread {
     }
 
     public void displayGameScreen(String input) {
-        // TODO: display all words onto the grid, and start the timer of each word
-
-        // TODO: replace the below code with event handling when user presses any key
         Platform.runLater(() -> {
-            SceneController.getInstance().showGamePage();
+
+
         });
-
-
-        /*int matchingWordIdx = findMatchingWord('d');
-        if (matchingWordIdx != -1) {
-            // If matching, sending message to server to lock the word
-            ClientMain.wordsList.elementAt(matchingWordIdx).setState("RESERVED");
-            String message = "reserveWordByIndex" + ServerMain.messageDelimiter
-                    + matchingWordIdx + ServerMain.messageDelimiter
-                    + WordConversion.fromWord(ClientMain.wordsList.elementAt(matchingWordIdx));
-            try {
-                System.out.println(message);
-                ClientMain.sendMsgToServer(message);
-            } catch (IOException e) {
-                System.out.println("failed to send index of the reserved word");
-            }
-        } else {
-            System.out.println("cannot find word matching");
-        }*/
-    }
-
-    /**
-     * Return index of the word which first character is pressed by the client
-     * and the word is not reserved
-     * @param ch
-     * @return
-     */
-    private int findMatchingWord(char ch) {
-        for (int i = 0; i < ClientMain.wordsList.size(); i++) {
-            if (ch == ClientMain.wordsList.elementAt(i).getWord().charAt(0))
-                return i;
-        }
-        return -1;
     }
 
     public void endGameScreen(String input) {
@@ -219,11 +184,14 @@ class ClientListening extends Thread {
         });
     }
 
+    /**
+     * Add or replace with a new Word object given the word index extracted from the broadcast message.
+     * @param input message from server
+     */
     public void processNewWord(String input) {
-        int index = Integer.parseInt(input.split(ServerMain.messageDelimiter)[1]);
-        String word = input.split(ServerMain.messageDelimiter)[2];
-        Word newWord = WordConversion.toWord(word);
-        ClientMain.wordsList.add(index, newWord);
+        String[] tokenList = input.split(ServerMain.messageDelimiter);
+        int wordIdx = Integer.parseInt(tokenList[1]);
+        String word = tokenList[2];
+        ClientMain.wordsList.add(wordIdx, WordConversion.toWord(word));
     }
-
 }

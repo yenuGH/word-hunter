@@ -1,5 +1,10 @@
 package com.wordhunter.server;
 
+import com.wordhunter.client.logic.ClientMain;
+import com.wordhunter.conversion.WordConversion;
+import com.wordhunter.models.Word;
+import com.wordhunter.models.WordState;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +59,7 @@ class PlayerThread extends Thread {
 
         // setup message callbacks
         messageToCallback.put("", PlayerThread::handleHeartBeat);
-        messageToCallback.put("reserveWordByIndex", PlayerThread::handleReserveWord);
+        messageToCallback.put("changeWordStatus", PlayerThread::handleWordStateChanged);
 
         heartBeatHandle = scheduler.scheduleAtFixedRate(disconnectRunnable,
                 2 * ServerMain.heartBeatInterval,
@@ -142,11 +147,23 @@ class PlayerThread extends Thread {
         ServerMain.sendMessageToClient(sock, "");
     }
 
-    public void handleReserveWord(String input) {
-        int index = Integer.parseInt(input.split(ServerMain.messageDelimiter)[1]);
-        String word = input.split(ServerMain.messageDelimiter)[2];
-        System.out.println("Reserved word at " + index + ": " + word);
+    public void handleWordStateChanged(String input) {
+        String[] tokenList = input.split(ServerMain.messageDelimiter);
+        int wordIdx = Integer.parseInt(tokenList[1]);
+        Word word = WordConversion.toWord(tokenList[2]);
 
-        ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + index + ServerMain.messageDelimiter + word);
+        if (word.getState() == WordState.RESERVED) {
+            // send this to all clients
+            //client calls
+        }
+
+        if (word.getState() == WordState.OPEN) {
+            //message: index and word itself
+        }
+
+        if (word.getState() == WordState.CLOSED) {
+            // send message to all clients that word should be removed
+            // addNewWord
+        }
     }
 }

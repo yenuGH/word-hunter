@@ -1,34 +1,32 @@
 package com.wordhunter.models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Word implements Serializable {
     private String word;
-    private String state;
+    private WordState state;
     private String color;
     private int posX;
     private int posY;
-    //add timer for each word
+    // TODO: add timer for each word, relevant to health bar
 
-    public Word(String word, String state) {
+    public Word(String word, int x, int y) {
         this.word = word;
-        this.state = state;
+        this.state = WordState.OPEN;
         this.color = "#F00";
-        this.posX = 0;
-        this.posY = 0;
+        this.posX = x;
+        this.posY = y;
     }
 
     public String getWord() {
         return word;
     }
 
-    public String getState() {
+    public WordState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(WordState state) {
         this.state = state;
     }
 
@@ -44,13 +42,8 @@ public class Word implements Serializable {
         return posX;
     }
 
-    public void setGridPosition(int x, int y) {
-        this.posX = x;
-        this.posY = y;
-    }
-
-    public ArrayList<Integer> getGridPosition() {
-        return new ArrayList<>(Arrays.asList(posX, posY));
+    public int getPosY() {
+        return posY;
     }
 
     @Override

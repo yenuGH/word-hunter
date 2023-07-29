@@ -44,9 +44,6 @@ class HeartBeat extends TimerTask {
     }
 }
 
-
-
-
 /**
  * ClientMain
  *
@@ -85,28 +82,7 @@ public class ClientMain
      * ClientMain()
      * entry point -> choose start server or join as client
      */
-    public ClientMain() throws IOException, InterruptedException
-    {
-        /*if (Objects.equals(input, "createServer")) {
-            createServer();
-        }
-        connectServer(false);
-
-         temp for testing. replace with UI prompt?
-        System.out.println("enter serverip: (enter nothing for localhost)");
-        Scanner myObj = new Scanner(System.in);
-        serverIP = myObj.nextLine();
-
-        System.out.println("1 to start server: (enter anything else to connect as client)");
-        String input = myObj.nextLine();
-
-        // for testing -> change later
-        if(Objects.equals(input, "1"))
-        {
-            createServer();
-        }
-        connectServer(false);*/
-    }
+    public ClientMain() throws IOException, InterruptedException {}
 
     public void setAddress(String address) {
         if (Objects.equals(address, ""))
