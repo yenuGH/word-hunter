@@ -96,6 +96,7 @@ public class ServerMain extends Thread
         System.out.println("server game start");
 
 
+
         broadcast("gameStart" + messageDelimiter
                 + "gameTimer" + messageDelimiter
                 + gameMaxTimeMin * 60);

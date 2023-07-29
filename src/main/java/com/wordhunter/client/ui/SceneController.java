@@ -70,6 +70,7 @@ public class SceneController {
 
         stage.setScene(scene);
         stage.show();
+        WordHunterController.getInstance();
 
         stage.setResizable(false);
     }

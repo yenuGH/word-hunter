@@ -30,10 +30,19 @@ public class WordHunterController {
     private Vector<Word> wordsList = new Vector<>();
     private WordPane[][] wordPanes = new WordPane[ServerMain.dimension][ServerMain.dimension];
 
+    private static WordHunterController wordHunterController;
+    public static WordHunterController getInstance() {
+        if (wordHunterController == null) {
+            wordHunterController = new WordHunterController();
+        }
+        return wordHunterController;
+    }
+
     @FXML
     public void initialize() {
         clientMain = ClientMain.getInstance();
         wordsList = clientMain.wordsList;
+        System.out.println("Size of wordlist " + clientMain.wordsList.size());
         // Make a border
         grids.setStyle(WordPane.BORDER);
         //System.out.println(grids);
@@ -62,15 +71,18 @@ public class WordHunterController {
         wordPanes[word.getPosX()][word.getPosY()].setWord(word.getWord());
     }
 
+    public void clearWordPaneText(Word word) {
+        wordPanes[word.getPosX()][word.getPosY()].setWord("");
+    }
+
     private void clearUserInput(){
         Platform.runLater(() -> {
             userInputField.clear();
         });
     }
 
-    private void requestWordStateChanged(Word word, String newState) {
-        String message = "wordStateChanged" + ServerMain.messageDelimiter
-                        + newState + ServerMain.messageDelimiter + WordConversion.fromWord(word);
+    private void requestWordStateChanged(Word word, String token) {
+        String message = token + ServerMain.messageDelimiter + WordConversion.fromWord(word);
         try {
             clientMain.sendMsgToServer(message);
         } catch (IOException e) {
@@ -107,7 +119,7 @@ public class WordHunterController {
                         clearUserInput();
                     } else if (targetWord.getWord().equals(newInput)) {
                         // Case 4: word is completed
-                        requestWordStateChanged(targetWord, "CLOSED");
+                        requestWordStateChanged(targetWord, "removeWord");
                         clearUserInput();
                     }
                 }

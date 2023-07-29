@@ -2,9 +2,11 @@ package com.wordhunter.client.logic;
 
 import com.wordhunter.client.ui.SceneController;
 import com.wordhunter.client.ui.ServerPageController;
+import com.wordhunter.client.ui.WordHunterController;
 import com.wordhunter.conversion.PlayerConversion;
 import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Player;
+import com.wordhunter.models.Word;
 import com.wordhunter.server.ServerMain;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -48,6 +50,7 @@ class ClientListening extends Thread {
         messageToCallback.put("gameStart", ClientListening::displayGameScreen);
         messageToCallback.put("gameOver", ClientListening::endGameScreen);
         messageToCallback.put("addNewWord", ClientListening::processNewWord);
+        messageToCallback.put("removeWord", ClientListening::handleCompletedWord);
     }
 
     /**
@@ -178,8 +181,7 @@ class ClientListening extends Thread {
 
     public void displayGameScreen(String input) {
         Platform.runLater(() -> {
-
-
+            SceneController.getInstance().showGamePage();
         });
     }
 
@@ -195,8 +197,14 @@ class ClientListening extends Thread {
      */
     public void processNewWord(String input) {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
-        int wordIdx = Integer.parseInt(tokenList[1]);
-        String word = tokenList[2];
-        ClientMain.wordsList.add(wordIdx, WordConversion.toWord(word));
+        ClientMain.wordsList.add(WordConversion.toWord(tokenList[1]));
     }
+
+    public void handleCompletedWord(String input) {
+        String[] tokenList = input.split(ServerMain.messageDelimiter);
+        Word removedWord = WordConversion.toWord(tokenList[1]);
+        WordHunterController.getInstance().clearWordPaneText(removedWord);
+        ClientMain.wordsList.remove(removedWord);
+    }
+
 }
