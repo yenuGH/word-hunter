@@ -16,6 +16,7 @@ package com.wordhunter.server;
 import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Player;
 import com.wordhunter.models.Word;
+import com.wordhunter.models.WordGenerator;
 
 import java.io.*;
 import java.net.Socket;
@@ -28,6 +29,18 @@ import java.util.*;
 interface ServerMessageMethod
 {
     void method(PlayerThread parent, String input);
+}
+
+class WordTimerTask extends TimerTask {
+
+    private Word currentWord;
+
+    public WordTimerTask(Word word) {
+        this.currentWord = word;
+    }
+    public void run() {
+        ServerMain.broadcast("wordTtlOver" + ServerMain.messageDelimiter + WordConversion.fromWord(currentWord));
+    }
 }
 
 
@@ -53,7 +66,6 @@ public class ServerMain extends Thread
     // game variables
     public final static int wordLimit = 15;
     public final static int dimension = 5;
-    public static final Vector<String> dictionary = new Vector<>();
     public static final Vector<Word> wordsList = new Vector<>();
 
     /**
@@ -63,7 +75,7 @@ public class ServerMain extends Thread
     public void run()
     {
         System.out.println("starting server");
-        readDictionary();
+        WordGenerator.readDictionary();
 
         // start thread to start accepting clients
         ServerAcceptClients thread = new ServerAcceptClients();
@@ -82,14 +94,22 @@ public class ServerMain extends Thread
         }
 
         System.out.println("server game start");
-        // generating words and broadcast each word to all client
-        for (int i = 0; i < wordLimit; i++) {
-            generateNewWord(i);
-        }
+
 
         broadcast("gameStart" + messageDelimiter
                 + "gameTimer" + messageDelimiter
                 + gameMaxTimeMin * 60);
+
+        // generating words and broadcast each word to all client
+        for (int i = 0; i < wordLimit; i++) {
+            Word newWord = WordGenerator.generateNewWord();
+            wordsList.add(newWord);
+            ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter
+                    + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
+
+            Timer timer = new Timer();
+            timer.schedule(new WordTimerTask(newWord), newWord.getTimeToLive());
+        }
 
         // start game timer
         try
@@ -107,70 +127,6 @@ public class ServerMain extends Thread
         // TODO: add scores to message
         broadcast("gameOver");
         // TODO: clean up sockets (from client side? add option to start new game?)
-    }
-
-    // TODO: put methods into different class
-    /**
-     * Load all words in dictionary when server starts
-     */
-    private void readDictionary()
-    {
-        try {
-            File file = new File("src/main/java/com/wordhunter/server/dictionary.txt");
-            Scanner scanner = new Scanner(file);
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                dictionary.add(line);
-            }
-            scanner.close();
-        } catch (Exception e) {
-            System.out.println("failed to open dictionary.txt file");
-        }
-    }
-
-    /**
-     * Generate a new Word object and broadcast it to all clients with the associated index
-     * @param index index of Word in Vector<Word> wordsList
-     */
-    public void generateNewWord(int index)
-    {
-        Random rand = new Random(System.currentTimeMillis());
-        String newWord = dictionary.get(rand.nextInt(dictionary.size()));
-        while (checkDuplicateChar(newWord, wordsList)) {
-            newWord = dictionary.get(rand.nextInt(dictionary.size()));
-        }
-
-        int x = rand.nextInt(dimension);
-        int y = rand.nextInt(dimension);
-        while (checkOccupiedSpot(x, y, wordsList)) {
-            x = rand.nextInt(dimension);
-            y = rand.nextInt(dimension);
-        }
-
-        // Broadcast new word to all clients
-        Word word = new Word(newWord, x, y);
-        wordsList.add(word);
-        broadcast("addNewWord" + messageDelimiter + index + messageDelimiter + WordConversion.fromWord(word));
-    }
-
-    private boolean checkDuplicateChar(String word, Vector<Word> wordsList)
-    {
-        for (int i = 0; i < wordsList.size(); i++) {
-            if (word.charAt(0) == wordsList.get(i).getWord().charAt(0)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    private boolean checkOccupiedSpot(int x, int y, Vector<Word> wordsList)
-    {
-        for (int i = 0; i < wordsList.size(); i++) {
-            Word word = wordsList.get(i);
-            if (x == word.getPosX() && y == word.getPosY()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

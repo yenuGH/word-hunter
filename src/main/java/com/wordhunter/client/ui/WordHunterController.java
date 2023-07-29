@@ -68,11 +68,9 @@ public class WordHunterController {
         });
     }
 
-    private void sendMessageToServer(Word word, WordState newState) {
-        word.setState(newState);
-
+    private void requestWordStateChanged(Word word, String newState) {
         String message = "wordStateChanged" + ServerMain.messageDelimiter
-                        + WordConversion.fromWord(word);
+                        + newState + ServerMain.messageDelimiter + WordConversion.fromWord(word);
         try {
             clientMain.sendMsgToServer(message);
         } catch (IOException e) {
@@ -99,17 +97,17 @@ public class WordHunterController {
                         clearUserInput();
                     } else {
                         // Case 2: word is found, reserve the word
-                        sendMessageToServer(targetWord, WordState.RESERVED);
+                        requestWordStateChanged(targetWord, "RESERVED");
                     }
 
                 } else {
                     if (targetWord == null) {
                         // Case 3: player mistypes the word, reopen it again
-                        sendMessageToServer(targetWord, WordState.OPEN);
+                        requestWordStateChanged(targetWord, "REOPEN");
                         clearUserInput();
                     } else if (targetWord.getWord().equals(newInput)) {
                         // Case 4: word is completed
-                        sendMessageToServer(targetWord, WordState.RESERVED);
+                        requestWordStateChanged(targetWord, "CLOSED");
                         clearUserInput();
                     }
                 }
