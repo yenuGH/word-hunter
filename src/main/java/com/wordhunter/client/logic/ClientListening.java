@@ -1,10 +1,12 @@
 package com.wordhunter.client.logic;
 
 import com.wordhunter.client.ui.SceneController;
+import com.wordhunter.client.ui.ServerPageController;
 import com.wordhunter.conversion.PlayerConversion;
 import com.wordhunter.models.Player;
 import com.wordhunter.server.ServerMain;
 import javafx.application.Platform;
+import javafx.scene.Scene;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -133,13 +135,16 @@ class ClientListening extends Thread {
      * @param input message from server
      */
     public void newPlayerJoin(String input) {
+        String playerList = input.split("playerList" + ServerMain.messageDelimiter)[1];
+        Vector<Player> players = PlayerConversion.toPlayers(playerList);
+
         // get own color id
         if (parent.colorId.isEmpty()) {
-            String playerList = input.split("playerList" + ServerMain.messageDelimiter)[1];
-            Vector<Player> players = PlayerConversion.toPlayers(playerList);
             parent.colorId = players.elementAt(players.size() - 1).getColor();
             System.out.println("got color id:" + parent.colorId);
         }
+
+        ServerPageController.refreshPlayerList(players);
     }
 
     /**

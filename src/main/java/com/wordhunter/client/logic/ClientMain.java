@@ -10,6 +10,7 @@ package com.wordhunter.client.logic;
  * - handles server disconnect by exiting
  */
 
+import com.wordhunter.models.Player;
 import com.wordhunter.server.ServerMain;
 import com.wordhunter.server.ServerState;
 
@@ -64,6 +65,8 @@ public class ClientMain
     // game variables
     public String username = "test";        // temporary: entered by client later. move to player class?
     public String colorId = "";
+
+    public Vector<Player> players;
 
     // Singleton
     public static ClientMain getInstance() {
@@ -159,6 +162,10 @@ public class ClientMain
         sendMsgToServer(message);
         ClientListening listenThread = new ClientListening(sock, this);
         listenThread.start();
+    }
+
+    public Vector<Player> getPlayerList(){
+        return players;
     }
 
     /**
