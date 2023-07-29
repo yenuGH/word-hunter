@@ -68,6 +68,18 @@ public class WordHunterController {
         });
     }
 
+    private void sendMessageToServer(Word word, WordState newState) {
+        word.setState(newState);
+
+        String message = "wordStateChanged" + ServerMain.messageDelimiter
+                        + WordConversion.fromWord(word);
+        try {
+            clientMain.sendMsgToServer(message);
+        } catch (IOException e) {
+            System.out.println("Unable to signal word state changed to server");
+        }
+    }
+
     private void handleKeyTypedEvent() {
         userInputField.setText("");
         userInputField.textProperty().addListener(new ChangeListener<>() {
@@ -83,18 +95,21 @@ public class WordHunterController {
                 if (newInput.length() == 1) {
                     if (targetWord == null || targetWord.getState() != WordState.OPEN) {
                         // Case 1: word is not found, or word has been reserved
-
+                        System.out.println("Waning: word is not found, or it it reserved");
                         clearUserInput();
                     } else {
                         // Case 2: word is found, reserve the word
+                        sendMessageToServer(targetWord, WordState.RESERVED);
                     }
 
                 } else {
                     if (targetWord == null) {
-                        // Case 3: player mistypes the word, reopwn it again
+                        // Case 3: player mistypes the word, reopen it again
+                        sendMessageToServer(targetWord, WordState.OPEN);
                         clearUserInput();
                     } else if (targetWord.getWord().equals(newInput)) {
                         // Case 4: word is completed
+                        sendMessageToServer(targetWord, WordState.RESERVED);
                         clearUserInput();
                     }
                 }
