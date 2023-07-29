@@ -109,16 +109,17 @@ public class WordHunterController {
                         clearUserInput();
                     } else {
                         // Case 2: word is found, reserve the word
-                        requestWordStateChanged(targetWord, "RESERVED");
+                        requestWordStateChanged(targetWord, "reservedWord");
                     }
 
                 } else {
                     if (targetWord == null) {
                         // Case 3: player mistypes the word, reopen it again
-                        requestWordStateChanged(targetWord, "REOPEN");
+                        requestWordStateChanged(targetWord, "reopenWord");
                         clearUserInput();
                     } else if (targetWord.getWord().equals(newInput)) {
                         // Case 4: word is completed
+                        clearWordPaneText(targetWord);
                         requestWordStateChanged(targetWord, "removeWord");
                         clearUserInput();
                     }

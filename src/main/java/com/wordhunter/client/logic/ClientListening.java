@@ -203,7 +203,6 @@ class ClientListening extends Thread {
     public void handleCompletedWord(String input) {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word removedWord = WordConversion.toWord(tokenList[1]);
-        WordHunterController.getInstance().clearWordPaneText(removedWord);
         ClientMain.wordsList.remove(removedWord);
     }
 

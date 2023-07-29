@@ -26,8 +26,8 @@ public class Word implements Serializable {
 
     public long getTimeToLive() {
         Random random = new Random();
-        int lowerBound = 5000;
-        int upperBound = 8000;
+        int lowerBound = 50000;
+        int upperBound = 80000;
         return random.nextInt((upperBound - lowerBound) + 1) + lowerBound;
     }
 

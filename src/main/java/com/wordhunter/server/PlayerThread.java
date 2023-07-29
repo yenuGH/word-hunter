@@ -60,7 +60,9 @@ class PlayerThread extends Thread {
 
         // setup message callbacks
         messageToCallback.put("", PlayerThread::handleHeartBeat);
-
+        messageToCallback.put("removeWord", PlayerThread::handleCompletedWord);
+        messageToCallback.put("reserveWord", PlayerThread::handleReserveWord);
+        messageToCallback.put("reopenWord", PlayerThread::handleReopenWord);
 
         heartBeatHandle = scheduler.scheduleAtFixedRate(disconnectRunnable,
                 2 * ServerMain.heartBeatInterval,
@@ -152,11 +154,8 @@ class PlayerThread extends Thread {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word target = WordConversion.toWord(tokenList[1]);
 
-        for (Word word : ServerMain.wordsList) {
-            if (target.equals(word)) {
-                ServerMain.wordsList.remove(word);
-            }
-        }
+        ServerMain.wordsList.remove(target);
+        System.out.println("Size of wordlist " + ServerMain.wordsList.size());
 
         String removeWordMsg = "removingCompletedWord" + ServerMain.messageDelimiter
                                 + WordConversion.fromWord(target);

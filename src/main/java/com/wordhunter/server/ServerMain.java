@@ -105,8 +105,7 @@ public class ServerMain extends Thread
         for (int i = 0; i < wordLimit; i++) {
             Word newWord = WordGenerator.generateNewWord();
             wordsList.add(newWord);
-            ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter
-                    + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
+            ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
 
             Timer timer = new Timer();
             timer.schedule(new WordTimerTask(newWord), newWord.getTimeToLive());
