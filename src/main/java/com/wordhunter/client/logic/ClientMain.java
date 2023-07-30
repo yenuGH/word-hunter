@@ -10,6 +10,7 @@ package com.wordhunter.client.logic;
  * - handles server disconnect by exiting
  */
 
+import com.wordhunter.models.Word;
 import com.wordhunter.models.Player;
 import com.wordhunter.server.ServerMain;
 import com.wordhunter.server.ServerState;
@@ -65,7 +66,7 @@ public class ClientMain
     // game variables
     public String username = "test";        // temporary: entered by client later. move to player class?
     public String colorId = "";
-
+    public static final Vector<Word> wordsList = new Vector<>();
     public Vector<Player> players;
 
     // Singleton
@@ -86,28 +87,7 @@ public class ClientMain
      * ClientMain()
      * entry point -> choose start server or join as client
      */
-    public ClientMain() throws IOException, InterruptedException
-    {
-        /*if (Objects.equals(input, "createServer")) {
-            createServer();
-        }
-        connectServer(false);
-
-         temp for testing. replace with UI prompt?
-        System.out.println("enter serverip: (enter nothing for localhost)");
-        Scanner myObj = new Scanner(System.in);
-        serverIP = myObj.nextLine();
-
-        System.out.println("1 to start server: (enter anything else to connect as client)");
-        String input = myObj.nextLine();
-
-        // for testing -> change later
-        if(Objects.equals(input, "1"))
-        {
-            createServer();
-        }
-        connectServer(false);*/
-    }
+    public ClientMain() throws IOException, InterruptedException {}
 
     public void setAddress(String address) {
         if (Objects.equals(address, ""))

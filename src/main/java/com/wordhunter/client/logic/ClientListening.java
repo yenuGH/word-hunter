@@ -2,8 +2,11 @@ package com.wordhunter.client.logic;
 
 import com.wordhunter.client.ui.SceneController;
 import com.wordhunter.client.ui.ServerPageController;
+import com.wordhunter.client.ui.WordHunterController;
 import com.wordhunter.conversion.PlayerConversion;
+import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Player;
+import com.wordhunter.models.Word;
 import com.wordhunter.server.ServerMain;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -29,6 +32,8 @@ class ClientListening extends Thread {
 
     private final Map<String, MessageMethod> messageToCallback = new HashMap<>();
 
+    private WordHunterController wordHunterController;
+
     /**
      * ClientListening()
      * constructor
@@ -47,7 +52,7 @@ class ClientListening extends Thread {
         messageToCallback.put("gameStart", ClientListening::displayGameScreen);
         messageToCallback.put("gameOver", ClientListening::endGameScreen);
         messageToCallback.put("addNewWord", ClientListening::processNewWord);
-
+        messageToCallback.put("removeWord", ClientListening::handleCompletedWord);
     }
 
     /**
@@ -177,35 +182,9 @@ class ClientListening extends Thread {
     }
 
     public void displayGameScreen(String input) {
-        // TODO: display all words onto the grid, and start the timer of each word
-
-        // TODO: replace the below code with event handling when user presses any key
-        System.out.print("Enter the word:");  //
-        //Scanner sc = new Scanner(System.in);
-        //char ch = sc.next().charAt(0);
-
-        //
         Platform.runLater(() -> {
-            SceneController.getInstance().showGamePage();
+            this.wordHunterController = SceneController.getInstance().showGamePage();
         });
-
-
-        /*int matchingWordIdx = findMatchingWord('d');
-        if (matchingWordIdx != -1) {
-            // If matching, sending message to server to lock the word
-            ClientMain.wordsList.elementAt(matchingWordIdx).setState("RESERVED");
-            String message = "reserveWordByIndex" + ServerMain.messageDelimiter
-                    + matchingWordIdx + ServerMain.messageDelimiter
-                    + WordConversion.fromWord(ClientMain.wordsList.elementAt(matchingWordIdx));
-            try {
-                System.out.println(message);
-                ClientMain.sendMsgToServer(message);
-            } catch (IOException e) {
-                System.out.println("failed to send index of the reserved word");
-            }
-        } else {
-            System.out.println("cannot find word matching");
-        }*/
     }
 
     public void endGameScreen(String input) {
@@ -214,8 +193,25 @@ class ClientListening extends Thread {
         });
     }
 
+    /**
+     * Add or replace with a new Word object given the word index extracted from the broadcast message.
+     * @param input message from server
+     */
     public void processNewWord(String input) {
-        //nothing so far
+        String[] tokenList = input.split(ServerMain.messageDelimiter);
+        ClientMain.wordsList.add(WordConversion.toWord(tokenList[1]));
+
+        if (wordHunterController != null) {
+            Platform.runLater(() -> {
+                wordHunterController.setWordPaneText(WordConversion.toWord(tokenList[1]));
+            });
+        }
+    }
+
+    public void handleCompletedWord(String input) {
+        String[] tokenList = input.split(ServerMain.messageDelimiter);
+        Word removedWord = WordConversion.toWord(tokenList[1]);
+        ClientMain.wordsList.remove(removedWord);
     }
 
 }

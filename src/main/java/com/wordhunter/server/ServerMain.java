@@ -13,7 +13,10 @@ package com.wordhunter.server;
  */
 
 
+import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Player;
+import com.wordhunter.models.Word;
+import com.wordhunter.models.WordGenerator;
 
 import java.io.*;
 import java.net.Socket;
@@ -26,6 +29,18 @@ import java.util.*;
 interface ServerMessageMethod
 {
     void method(PlayerThread parent, String input);
+}
+
+class WordTimerTask extends TimerTask {
+
+    private Word currentWord;
+
+    public WordTimerTask(Word word) {
+        this.currentWord = word;
+    }
+    public void run() {
+        ServerMain.broadcast("wordTtlOver" + ServerMain.messageDelimiter + WordConversion.fromWord(currentWord));
+    }
 }
 
 
@@ -49,7 +64,9 @@ public class ServerMain extends Thread
     public static long timerStartTime;
 
     // game variables
-    public final static int wordLimit = 10;
+    public final static int wordLimit = 15;
+    public final static int dimension = 5;
+    public static final Vector<Word> wordsList = new Vector<>();
 
     /**
      * main()
@@ -58,6 +75,7 @@ public class ServerMain extends Thread
     public void run()
     {
         System.out.println("starting server");
+        WordGenerator.readDictionary();
 
         // start thread to start accepting clients
         ServerAcceptClients thread = new ServerAcceptClients();
@@ -77,9 +95,21 @@ public class ServerMain extends Thread
 
         System.out.println("server game start");
 
+
+
         broadcast("gameStart" + messageDelimiter
                 + "gameTimer" + messageDelimiter
                 + gameMaxTimeMin * 60);
+
+        // generating words and broadcast each word to all client
+        for (int i = 0; i < wordLimit; i++) {
+            Word newWord = WordGenerator.generateNewWord();
+            wordsList.add(newWord);
+            ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
+
+            Timer timer = new Timer();
+            timer.schedule(new WordTimerTask(newWord), newWord.getTimeToLive());
+        }
 
         // start game timer
         try

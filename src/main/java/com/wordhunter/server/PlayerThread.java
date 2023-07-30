@@ -1,5 +1,11 @@
 package com.wordhunter.server;
 
+import com.wordhunter.client.logic.ClientMain;
+import com.wordhunter.conversion.WordConversion;
+import com.wordhunter.models.Word;
+import com.wordhunter.models.WordGenerator;
+import com.wordhunter.models.WordState;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +60,9 @@ class PlayerThread extends Thread {
 
         // setup message callbacks
         messageToCallback.put("", PlayerThread::handleHeartBeat);
+        messageToCallback.put("removeWord", PlayerThread::handleCompletedWord);
+        messageToCallback.put("reserveWord", PlayerThread::handleReserveWord);
+        messageToCallback.put("reopenWord", PlayerThread::handleReopenWord);
 
         heartBeatHandle = scheduler.scheduleAtFixedRate(disconnectRunnable,
                 2 * ServerMain.heartBeatInterval,
@@ -140,4 +149,48 @@ class PlayerThread extends Thread {
     public void handleHeartBeat(String input) {
         ServerMain.sendMessageToClient(sock, "");
     }
+
+    public void handleCompletedWord(String input) {
+        String[] tokenList = input.split(ServerMain.messageDelimiter);
+        Word target = WordConversion.toWord(tokenList[1]);
+
+        ServerMain.wordsList.remove(target);
+        System.out.println("Size of wordlist " + ServerMain.wordsList.size());
+
+        String removeWordMsg = "removingCompletedWord" + ServerMain.messageDelimiter
+                                + WordConversion.fromWord(target);
+        ServerMain.broadcast(removeWordMsg);
+
+        // Add new word
+        Word newWord = WordGenerator.generateNewWord();
+        ServerMain.wordsList.add(newWord);
+        ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
+    }
+
+    public void handleReserveWord(String input) {
+        String[] tokenList = input.split(ServerMain.messageDelimiter);
+        Word target = WordConversion.toWord(tokenList[1]);
+
+        for (Word word : ServerMain.wordsList) {
+            if (target.equals(word) && word.getState() == WordState.OPEN) {
+                word.setState(WordState.RESERVED);
+                ServerMain.broadcast("reserveWord" + ServerMain.messageDelimiter + WordConversion.fromWord(word));
+                return;
+            }
+        }
+    }
+
+    public void handleReopenWord(String input) {
+        String[] tokenList = input.split(ServerMain.messageDelimiter);
+        Word target = WordConversion.toWord(tokenList[1]);
+
+        for (Word word : ServerMain.wordsList) {
+            if (target.equals(word) && word.getState() == WordState.RESERVED) {
+                word.setState(WordState.OPEN);
+                ServerMain.broadcast("reopenWord" + ServerMain.messageDelimiter + WordConversion.fromWord(word));
+                return;
+            }
+        }
+    }
+
 }
