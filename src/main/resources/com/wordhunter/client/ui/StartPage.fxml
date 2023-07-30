@@ -18,7 +18,7 @@
             <Font size="36.0" />
          </font>
       </Button>
-      <TextField fx:id="textField" layoutX="250.0" layoutY="450.0" prefHeight="25.0" prefWidth="300.0" />
+      <TextField fx:id="ipAddressField" layoutX="250.0" layoutY="450.0" prefHeight="25.0" prefWidth="300.0" />
       <Label fx:id="label" layoutX="275.0" layoutY="410.0" text="Enter Server's IP address.">
          <font>
             <Font size="24.0" />
@@ -29,5 +29,11 @@
             <Font size="48.0" />
          </font>
       </Label>
+      <Label layoutX="288.0" layoutY="142.0" text="Enter your username:" textAlignment="CENTER">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <TextField fx:id="usernameField" layoutX="288.0" layoutY="177.0" prefHeight="25.0" prefWidth="225.0" />
    </children>
 </AnchorPane>

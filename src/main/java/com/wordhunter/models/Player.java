@@ -29,6 +29,10 @@ public class Player implements Serializable {
         return name;
     }
 
+    public void setName(String username) {
+        this.name = username;
+    }
+
     public String getColor() {
         return color;
     }

@@ -9,6 +9,7 @@ import com.wordhunter.models.Player;
 import com.wordhunter.models.Word;
 import com.wordhunter.server.ServerMain;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 
 import java.io.BufferedReader;
@@ -17,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ClientListening
@@ -53,6 +55,7 @@ class ClientListening extends Thread {
         messageToCallback.put("gameOver", ClientListening::endGameScreen);
         messageToCallback.put("addNewWord", ClientListening::processNewWord);
         messageToCallback.put("removeWord", ClientListening::handleCompletedWord);
+        messageToCallback.put("startTimer", ClientListening::updateStartTimer);
     }
 
     /**
@@ -146,7 +149,7 @@ class ClientListening extends Thread {
         // get own color id
         if (parent.colorId.isEmpty()) {
             parent.colorId = players.elementAt(players.size() - 1).getColor();
-            System.out.println("got color id:" + parent.colorId);
+            //System.out.println("got color id:" + parent.colorId);
         }
 
         ServerPageController.refreshPlayerList(players);
@@ -212,6 +215,16 @@ class ClientListening extends Thread {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word removedWord = WordConversion.toWord(tokenList[1]);
         ClientMain.wordsList.remove(removedWord);
+    }
+
+    public void updateStartTimer(String input) {
+        int duration = Integer.parseInt(input.replace("startTimer!", ""));
+
+        Platform.runLater(() -> {
+            parent.getServerPageController().updateStartTimer(duration);
+        });
+        //ClientMain.getInstance().setStartTimer(duration);
+        //System.out.println("Game starts in " + duration + " seconds.");
     }
 
 }

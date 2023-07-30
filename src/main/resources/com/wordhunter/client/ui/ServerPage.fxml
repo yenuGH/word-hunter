@@ -32,7 +32,7 @@
             <Font size="36.0" />
          </font>
       </Label>
-      <Label layoutX="286.0" layoutY="667.0" text="Game will start in x mins">
+      <Label fx:id="startTimer" layoutX="286.0" layoutY="667.0" text="Game will start in x mins">
          <font>
             <Font size="24.0" />
          </font>
