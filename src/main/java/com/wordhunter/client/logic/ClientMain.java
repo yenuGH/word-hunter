@@ -151,6 +151,10 @@ public class ClientMain
         return players;
     }
 
+    public String getServerIP(){
+        return this.serverIP;
+    }
+
     /**
      * sendMsgToServer()
      * sends message to server
@@ -165,6 +169,10 @@ public class ClientMain
 
     public void setUsername(String username){
         this.username = username;
+    }
+
+    public String getUsername(){
+        return this.username;
     }
 
     public void setServerPageController(ServerPageController serverPageController){
