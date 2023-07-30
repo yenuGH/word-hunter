@@ -32,6 +32,8 @@ class ClientListening extends Thread {
 
     private final Map<String, MessageMethod> messageToCallback = new HashMap<>();
 
+    private WordHunterController wordHunterController;
+
     /**
      * ClientListening()
      * constructor
@@ -181,7 +183,7 @@ class ClientListening extends Thread {
 
     public void displayGameScreen(String input) {
         Platform.runLater(() -> {
-            SceneController.getInstance().showGamePage();
+            this.wordHunterController = SceneController.getInstance().showGamePage();
         });
     }
 
@@ -198,6 +200,12 @@ class ClientListening extends Thread {
     public void processNewWord(String input) {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         ClientMain.wordsList.add(WordConversion.toWord(tokenList[1]));
+
+        if (wordHunterController != null) {
+            Platform.runLater(() -> {
+                wordHunterController.setWordPaneText(WordConversion.toWord(tokenList[1]));
+            });
+        }
     }
 
     public void handleCompletedWord(String input) {

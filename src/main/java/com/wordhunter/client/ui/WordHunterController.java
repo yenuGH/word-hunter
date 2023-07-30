@@ -26,7 +26,7 @@ public class WordHunterController {
     private TextField userInputField;
 
     // client connection and game variables
-    private ClientMain clientMain;
+    public ClientMain clientMain;
     private Vector<Word> wordsList = new Vector<>();
     private WordPane[][] wordPanes = new WordPane[ServerMain.dimension][ServerMain.dimension];
 
@@ -67,7 +67,7 @@ public class WordHunterController {
      *
      * @param word
      */
-    private void setWordPaneText(Word word) {
+    public void setWordPaneText(Word word) {
         wordPanes[word.getPosX()][word.getPosY()].setWord(word.getWord());
     }
 
@@ -94,6 +94,7 @@ public class WordHunterController {
         userInputField.setText("");
         userInputField.textProperty().addListener(new ChangeListener<>() {
 
+            private Word reservedWord;
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String oldInput, String newInput) {
                 // TODO: disable backspace and delete key
@@ -109,13 +110,14 @@ public class WordHunterController {
                         clearUserInput();
                     } else {
                         // Case 2: word is found, reserve the word
+                        reservedWord = targetWord;
                         requestWordStateChanged(targetWord, "reservedWord");
                     }
 
                 } else {
                     if (targetWord == null) {
                         // Case 3: player mistypes the word, reopen it again
-                        requestWordStateChanged(targetWord, "reopenWord");
+                        requestWordStateChanged(reservedWord, "reopenWord");
                         clearUserInput();
                     } else if (targetWord.getWord().equals(newInput)) {
                         // Case 4: word is completed

@@ -163,6 +163,7 @@ class PlayerThread extends Thread {
 
         // Add new word
         Word newWord = WordGenerator.generateNewWord();
+        ServerMain.wordsList.add(newWord);
         ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
     }
 

@@ -57,10 +57,12 @@ public class SceneController {
         stage.setResizable(false);
     }
 
-    public void showGamePage() {
+    public WordHunterController showGamePage() {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("WordHunter.fxml"));
+
         Parent root = null;
         try {
-            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("WordHunter.fxml")));
+            root = fxmlLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,6 +75,8 @@ public class SceneController {
         WordHunterController.getInstance();
 
         stage.setResizable(false);
+
+        return fxmlLoader.getController();
     }
 
     public void setStage(Stage stage){
