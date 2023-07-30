@@ -21,6 +21,7 @@ import com.wordhunter.models.WordGenerator;
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 
 /**
@@ -62,6 +63,8 @@ public class ServerMain extends Thread
     public static final Vector<Player> playerList = new Vector<>();
     public static ServerState serverState = ServerState.STARTED;
     public static long timerStartTime;
+
+    public static final Semaphore wordsListLock = new Semaphore(1);
 
     // game variables
     public final static int wordLimit = 15;
