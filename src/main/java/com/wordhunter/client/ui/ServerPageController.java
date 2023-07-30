@@ -3,10 +3,10 @@ package com.wordhunter.client.ui;
 import com.wordhunter.client.logic.ClientMain;
 import com.wordhunter.models.Player;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
@@ -20,16 +20,18 @@ public class ServerPageController{
     public Label serverIPLabel;
 
     @FXML
+    public Label currentPlayerLabel;
+
+    @FXML
     public Label startTimer;
 
     @FXML
     public ListView<String> playerView;
-    private static ObservableList<String> playerList = FXCollections.observableList(new ArrayList<>());
+    private ObservableList<String> playerList = FXCollections.observableList(new ArrayList<>());
 
     @FXML
     public void initialize(){
         playerView.setItems(playerList);
-
         ClientMain.getInstance().setServerPageController(this);
     }
 
@@ -59,7 +61,17 @@ public class ServerPageController{
         }, 0, 1000);
     }
 
-    public static void refreshPlayerList(Vector<Player> updatedPlayerList){
+    public void updateUsername(String username){
+        currentPlayerLabel.setText("Current Player: " + username);
+        currentPlayerLabel.setAlignment(Pos.CENTER);
+    }
+
+    public void updateIPAddress(String address) {
+        serverIPLabel.setText(address);
+        currentPlayerLabel.setAlignment(Pos.CENTER);
+    }
+
+    public void updatePlayerList(Vector<Player> updatedPlayerList){
         for (Player player : updatedPlayerList){
             if (!playerList.contains(player.getName())){
                 Platform.runLater(() -> {

@@ -10,8 +10,6 @@ import com.wordhunter.models.Word;
 import com.wordhunter.models.WordState;
 import com.wordhunter.server.ServerMain;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,7 +17,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * ClientListening
@@ -155,7 +152,11 @@ class ClientListening extends Thread {
             //System.out.println("got color id:" + parent.colorId);
         }
 
-        ServerPageController.refreshPlayerList(players);
+        Platform.runLater(() -> {
+            parent.serverPageController.updatePlayerList(players);
+            parent.serverPageController.updateUsername(parent.getUsername());
+            parent.serverPageController.updateIPAddress(parent.getServerIP());
+        });
     }
 
     /**

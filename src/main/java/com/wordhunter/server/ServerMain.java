@@ -94,11 +94,11 @@ public class ServerMain extends Thread
         ServerAcceptClients thread = new ServerAcceptClients();
         thread.start();
 
-        // start game start timer
+        // waiting room timer
         try
         {
             timerStartTime = System.nanoTime();
-            Thread.sleep(startGameTimeMin * 15000);
+            Thread.sleep(startGameTimeMin * 60000);
             ServerMain.serverState = ServerState.GAME_IN_PROGRESS;
         }
         catch (InterruptedException e)
@@ -124,7 +124,7 @@ public class ServerMain extends Thread
             timer.schedule(new WordTimerTask(newWord), newWord.generateTimeToLive());
         }
 
-        // start game timer
+        // game duration timer
         try
         {
             timerStartTime = System.nanoTime();

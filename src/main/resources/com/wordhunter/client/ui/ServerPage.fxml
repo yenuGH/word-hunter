@@ -27,7 +27,7 @@
             <ListView fx:id="playerView" prefHeight="200.0" prefWidth="500.0" />
          </content>
       </ScrollPane>
-      <Label layoutX="300.0" layoutY="200.0" text="Current Player">
+      <Label fx:id="currentPlayerLabel" layoutX="161.0" layoutY="193.0" text="Current Player: " textAlignment="CENTER">
          <font>
             <Font size="36.0" />
          </font>
