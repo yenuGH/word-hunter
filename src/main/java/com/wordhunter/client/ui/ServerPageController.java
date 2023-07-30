@@ -31,9 +31,9 @@ public class ServerPageController{
 
     public static void refreshPlayerList(Vector<Player> updatedPlayerList){
         for (Player player : updatedPlayerList){
-            if (!playerList.contains(player.getColor())){
+            if (!playerList.contains(player.getName())){
                 Platform.runLater(() -> {
-                    playerList.add(player.getColor());
+                    playerList.add(player.getName());
                 });
             }
 

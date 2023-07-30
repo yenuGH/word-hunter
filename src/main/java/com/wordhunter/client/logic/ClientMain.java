@@ -64,7 +64,7 @@ public class ClientMain
     public static Socket sock;              // socket connected to server
 
     // game variables
-    public String username = "test";        // temporary: entered by client later. move to player class?
+    public String username;        // temporary: entered by client later. move to player class?
     public String colorId = "";
     public static final Vector<Word> wordsList = new Vector<>();
     public Vector<Player> players;
@@ -158,6 +158,10 @@ public class ClientMain
         OutputStream os = sock.getOutputStream();
         PrintWriter out = new PrintWriter(os, true);
         out.println(msg);
+    }
+
+    public void setUsername(String username){
+        this.username = username;
     }
 
 }
