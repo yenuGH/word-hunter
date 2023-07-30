@@ -21,14 +21,18 @@ public class Word implements Serializable {
         this.color = "#F00";
         this.posX = x;
         this.posY = y;
-        this.expiredTime = System.currentTimeMillis() + getTimeToLive();
+        this.expiredTime = System.currentTimeMillis() + generateTimeToLive();
     }
 
-    public long getTimeToLive() {
+    public long generateTimeToLive() {
         Random random = new Random();
-        int lowerBound = 50000;
-        int upperBound = 80000;
+        int lowerBound = 10000;
+        int upperBound = 15000;
         return random.nextInt((upperBound - lowerBound) + 1) + lowerBound;
+    }
+
+    public long getTimeToLiveRemaining() {
+        return expiredTime - System.currentTimeMillis();
     }
 
     public String getWord() {

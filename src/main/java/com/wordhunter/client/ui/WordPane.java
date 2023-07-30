@@ -24,6 +24,8 @@ public class WordPane extends StackPane {
     // Label
     private final Label label;
 
+    private FadeTransition animation;
+
     public WordPane(String word){
         this.word = word;
 
@@ -49,13 +51,26 @@ public class WordPane extends StackPane {
         this.label.setText(word);
     }
 
+    public void setColor(String color) {
+        this.label.setTextFill(Color.web(color));
+    }
+
     // Give the color flush animation
     // The background color oscillate in given interval in millisecond
-    public Transition getAnimation(int interval){
-        FadeTransition transition = new FadeTransition(Duration.seconds(interval), this.label);
-        transition.setFromValue(1);
-        transition.setToValue(0);
-        transition.setCycleCount(1);
-        return transition;
+    public void initAnimation(long interval){
+        System.out.println("Interval: " + interval);
+        if (animation != null) {
+            closeAnimation();
+        }
+        animation = new FadeTransition(Duration.millis(interval), this.label);
+        animation.setFromValue(1);
+        animation.setToValue(0);
+        animation.setCycleCount(1);
+        animation.play();
+    }
+
+    public void closeAnimation() {
+        animation.stop();
+        animation = null;
     }
 }

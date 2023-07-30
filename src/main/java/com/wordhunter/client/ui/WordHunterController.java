@@ -4,6 +4,7 @@ import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Word;
 import com.wordhunter.models.WordState;
 import com.wordhunter.server.ServerMain;
+import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -29,6 +30,8 @@ public class WordHunterController {
     public ClientMain clientMain;
     private Vector<Word> wordsList = new Vector<>();
     private WordPane[][] wordPanes = new WordPane[ServerMain.dimension][ServerMain.dimension];
+    public Word reservedWord;
+
 
     private static WordHunterController wordHunterController;
     public static WordHunterController getInstance() {
@@ -58,6 +61,7 @@ public class WordHunterController {
 
         for (Word word : wordsList) {
             setWordPaneText(word);
+            startAnimation(word);
         }
 
         handleKeyTypedEvent();
@@ -67,18 +71,34 @@ public class WordHunterController {
      *
      * @param word
      */
+    public void startAnimation(Word word) {
+        wordPanes[word.getPosX()][word.getPosY()].initAnimation(word.getTimeToLiveRemaining());
+    }
+    public void stopAnimation(Word word) {
+        wordPanes[word.getPosX()][word.getPosY()].closeAnimation();
+    }
+
     public void setWordPaneText(Word word) {
         wordPanes[word.getPosX()][word.getPosY()].setWord(word.getWord());
     }
 
     public void clearWordPaneText(Word word) {
         wordPanes[word.getPosX()][word.getPosY()].setWord("");
+        wordPanes[word.getPosX()][word.getPosY()].setColor(ServerMain.defaultColor);
     }
 
     private void clearUserInput(){
         Platform.runLater(() -> {
             userInputField.clear();
         });
+    }
+
+    public void setWordPaneTextColor(Word word) {
+        wordPanes[word.getPosX()][word.getPosY()].setColor(word.getColor());
+    }
+
+    public void clearWordPaneColor(Word word) {
+        wordPanes[word.getPosX()][word.getPosY()].setColor(ServerMain.defaultColor);
     }
 
     private void requestWordStateChanged(Word word, String token) {
@@ -94,7 +114,6 @@ public class WordHunterController {
         userInputField.setText("");
         userInputField.textProperty().addListener(new ChangeListener<>() {
 
-            private Word reservedWord;
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String oldInput, String newInput) {
                 // TODO: disable backspace and delete key
@@ -104,14 +123,18 @@ public class WordHunterController {
 
                 Word targetWord = findTarget(newInput);
                 if (newInput.length() == 1) {
-                    if (targetWord == null || targetWord.getState() != WordState.OPEN) {
+                    if (targetWord == null) {
                         // Case 1: word is not found, or word has been reserved
-                        System.out.println("Waning: word is not found, or it it reserved");
+                        // TODO: add a warning message on the screen
+                        System.out.println("Warning: word is not found, or it it reserved");
                         clearUserInput();
                     } else {
                         // Case 2: word is found, reserve the word
-                        reservedWord = targetWord;
-                        requestWordStateChanged(targetWord, "reservedWord");
+                        String requestedWordStr = WordConversion.fromWord(targetWord);
+
+                        Word requestedWord = WordConversion.toWord(requestedWordStr);
+                        requestedWord.setColor(ClientMain.colorId);
+                        requestWordStateChanged(requestedWord, "reserveWord");
                     }
 
                 } else {
@@ -121,7 +144,6 @@ public class WordHunterController {
                         clearUserInput();
                     } else if (targetWord.getWord().equals(newInput)) {
                         // Case 4: word is completed
-                        clearWordPaneText(targetWord);
                         requestWordStateChanged(targetWord, "removeWord");
                         clearUserInput();
                     }

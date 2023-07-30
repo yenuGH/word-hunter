@@ -21,6 +21,7 @@ import com.wordhunter.models.WordGenerator;
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 
 /**
@@ -39,7 +40,16 @@ class WordTimerTask extends TimerTask {
         this.currentWord = word;
     }
     public void run() {
-        ServerMain.broadcast("wordTtlOver" + ServerMain.messageDelimiter + WordConversion.fromWord(currentWord));
+        try {
+            ServerMain.wordsListLock.acquire();
+        } catch (InterruptedException e) {
+            System.out.println("unable to lock the words list access");
+        }
+        // Remove once the TTL of the word is done
+        ServerMain.wordsList.remove(currentWord);
+        ServerMain.broadcast("removeWord" + ServerMain.messageDelimiter + WordConversion.fromWord(currentWord));
+
+        ServerMain.wordsListLock.release();
     }
 }
 
@@ -63,10 +73,13 @@ public class ServerMain extends Thread
     public static ServerState serverState = ServerState.STARTED;
     public static long timerStartTime;
 
+    public static final Semaphore wordsListLock = new Semaphore(1);
+
     // game variables
     public final static int wordLimit = 15;
     public final static int dimension = 5;
     public static final Vector<Word> wordsList = new Vector<>();
+    public final static String defaultColor = "#000000";
 
     /**
      * main()
@@ -108,7 +121,7 @@ public class ServerMain extends Thread
             ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
 
             Timer timer = new Timer();
-            timer.schedule(new WordTimerTask(newWord), newWord.getTimeToLive());
+            timer.schedule(new WordTimerTask(newWord), newWord.generateTimeToLive());
         }
 
         // game duration timer
