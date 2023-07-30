@@ -40,7 +40,16 @@ class WordTimerTask extends TimerTask {
         this.currentWord = word;
     }
     public void run() {
-        ServerMain.broadcast("wordTtlOver" + ServerMain.messageDelimiter + WordConversion.fromWord(currentWord));
+        try {
+            ServerMain.wordsListLock.acquire();
+        } catch (InterruptedException e) {
+            System.out.println("unable to lock the words list access");
+        }
+        // Remove once the TTL of the word is done
+        ServerMain.wordsList.remove(currentWord);
+        ServerMain.broadcast("removeWord" + ServerMain.messageDelimiter + WordConversion.fromWord(currentWord));
+
+        ServerMain.wordsListLock.release();
     }
 }
 
