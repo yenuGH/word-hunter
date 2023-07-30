@@ -160,7 +160,7 @@ class PlayerThread extends Thread {
         System.out.println("Size of wordlist " + ServerMain.wordsList.size());
 
         // Remove once word is done
-        String removeWordMsg = "removingCompletedWord" + ServerMain.messageDelimiter
+        String removeWordMsg = "removeWord" + ServerMain.messageDelimiter
                                 + WordConversion.fromWord(target);
         ServerMain.broadcast(removeWordMsg);
 
@@ -183,6 +183,7 @@ class PlayerThread extends Thread {
         for (Word word : ServerMain.wordsList) {
             if (target.equals(word) && word.getState() == WordState.OPEN) {
                 word.setState(WordState.RESERVED);
+                word.setColor(target.getColor());
                 ServerMain.broadcast("reserveWord" + ServerMain.messageDelimiter + WordConversion.fromWord(word));
                 break;
             }
@@ -202,6 +203,7 @@ class PlayerThread extends Thread {
         for (Word word : ServerMain.wordsList) {
             if (target.equals(word) && word.getState() == WordState.RESERVED) {
                 word.setState(WordState.OPEN);
+                word.setColor(ServerMain.defaultColor);
                 ServerMain.broadcast("reopenWord" + ServerMain.messageDelimiter + WordConversion.fromWord(word));
                 break;
             }

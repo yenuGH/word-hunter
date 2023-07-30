@@ -19,6 +19,7 @@ import com.wordhunter.server.ServerState;
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 
 /**
@@ -68,9 +69,11 @@ public class ClientMain
 
     // game variables
     public String username;        // temporary: entered by client later. move to player class?
-    public String colorId = "";
+    public static String colorId = "#DC143C";
     public static final Vector<Word> wordsList = new Vector<>();
     public Vector<Player> players;
+
+    public static final Semaphore clientWordsListLock = new Semaphore(1);
 
     // Singleton
     public static ClientMain getInstance() {

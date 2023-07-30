@@ -70,6 +70,7 @@ public class ServerMain extends Thread
     public final static int wordLimit = 15;
     public final static int dimension = 5;
     public static final Vector<Word> wordsList = new Vector<>();
+    public final static String defaultColor = "#000000";
 
     /**
      * main()
@@ -111,7 +112,7 @@ public class ServerMain extends Thread
             ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
 
             Timer timer = new Timer();
-            timer.schedule(new WordTimerTask(newWord), newWord.getTimeToLive());
+            timer.schedule(new WordTimerTask(newWord), newWord.generateTimeToLive());
         }
 
         // start game timer
