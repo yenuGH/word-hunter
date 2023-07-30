@@ -10,6 +10,7 @@ package com.wordhunter.client.logic;
  * - handles server disconnect by exiting
  */
 
+import com.wordhunter.client.ui.ServerPageController;
 import com.wordhunter.models.Word;
 import com.wordhunter.models.Player;
 import com.wordhunter.server.ServerMain;
@@ -59,6 +60,8 @@ public class ClientMain
     // server/connection variables
     public static final int reconnectMaxAttempt = 5;
     public static int reconnectAttempts = 0;
+
+    public ServerPageController serverPageController;
 
     public String serverIP;
     public static Socket sock;              // socket connected to server
@@ -164,4 +167,11 @@ public class ClientMain
         this.username = username;
     }
 
+    public void setServerPageController(ServerPageController serverPageController){
+        this.serverPageController = serverPageController;
+    }
+
+    public ServerPageController getServerPageController(){
+        return this.serverPageController;
+    }
 }
