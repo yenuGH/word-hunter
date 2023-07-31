@@ -1,0 +1,28 @@
+*
+{
+    /* only used for view within scene builder*/
+    -preferred-window-width: 800;
+    -preferred-window-height: 500;
+}
+
+/* server waiting room page */
+.list-cell
+{
+    -fx-font-size: 20;
+}
+/* root container of all pages*/
+.main_container
+{
+    -fx-pref-width: -preferred-window-width;
+    -fx-pref-height: -preferred-window-height;
+
+}
+/* reconnection overlay values*/
+.progress-indicator:indeterminate > .spinner
+{
+    -fx-background-color: transparent;
+}
+.progress-bar > .bar
+{
+    -fx-background-color: red;
+}

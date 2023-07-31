@@ -49,13 +49,17 @@ class ClientListening extends Thread {
         messageToCallback.put("playerDisconnect", ClientListening::playerDisconnect);
         messageToCallback.put("error", ClientListening::error);
         messageToCallback.put("", ClientListening::heartBeatAck);
+
+        messageToCallback.put("startTimer", ClientListening::updateStartTimer);
         messageToCallback.put("gameStart", ClientListening::displayGameScreen);
         messageToCallback.put("gameOver", ClientListening::endGameScreen);
+
         messageToCallback.put("addNewWord", ClientListening::processNewWord);
         messageToCallback.put("removeWord", ClientListening::handleCompletedWord);
         messageToCallback.put("reserveWord", ClientListening::handleReserveWord);
         messageToCallback.put("reopenWord", ClientListening::handleReopenWord);
-        messageToCallback.put("startTimer", ClientListening::updateStartTimer);
+
+        SceneController.getInstance().toggleReconnectionOverlay(false); // TODO: move to reconnect handle when implemented
     }
 
     /**
@@ -100,12 +104,12 @@ class ClientListening extends Thread {
 
     /**
      * disconnect()
-     * TODO: test reconnection state saving
-     * disconnect with server (if theres any cleanup or reconnect attempt, start from here)
+     * disconnect with server and attempt reconnection if max retries not reached
      */
     public void disconnect() throws IOException {
         sock.close();
         if (ClientMain.reconnectAttempts < ClientMain.reconnectMaxAttempt) {
+            SceneController.getInstance().toggleReconnectionOverlay(true);
             System.out.println("reconnection attempt " + ClientMain.reconnectAttempts);
             parent.connectServer(true);
         }
@@ -133,13 +137,9 @@ class ClientListening extends Thread {
         }
     }
 
-    // message event functions
-    // TODO: add other keyword functions (see message_formats.txt)
-
     /**
      * newPlayerJoin()
-     * TODO: add code to extract own colorId from here too
-     *
+     * extracts own colorId if needed, updates player list
      * @param input message from server
      */
     public void newPlayerJoin(String input) {
@@ -149,7 +149,6 @@ class ClientListening extends Thread {
         // get own color id
         if (parent.colorId.isEmpty()) {
             parent.colorId = players.elementAt(players.size() - 1).getColor();
-            //System.out.println("got color id:" + parent.colorId);
         }
 
         Platform.runLater(() -> {

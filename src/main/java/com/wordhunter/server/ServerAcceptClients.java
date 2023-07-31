@@ -114,7 +114,17 @@ class ServerAcceptClients extends Thread {
                                 + "maximum clients reached");
                         in.close();
                         client.close();
-                    } else {
+                    }
+                    else {
+                        // check if username already taken
+                        Optional<Player> foundPlayer = ServerMain.playerList.stream()
+                                .filter(player -> player.getName().equals(msg[1]))
+                                .findFirst();
+                        if(foundPlayer.isPresent())
+                        {
+                            ServerMain.sendMessageToClient(client, "error" + ServerMain.messageDelimiter
+                                    + "username taken");
+                        }
                         // create player obj and store socket in there
                         newPlayerJoinHandle(msg[1], client);
                     }
@@ -165,7 +175,6 @@ class ServerAcceptClients extends Thread {
             ServerMain.playerList.add(
                     new Player(username, colorIds.remove(0), client)
             );
-
 
             PlayerThread newPlayerThread = new PlayerThread(this, client, playerCount - 1);
             newPlayerThread.start();
