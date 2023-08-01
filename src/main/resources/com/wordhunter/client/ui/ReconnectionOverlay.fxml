@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--overlay when player reconnecting. stops all mouse clicks but doesn't pause any animations-->
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<fx:root alignment="CENTER"
+         style="-fx-background-color: #000000cc;"
+         type="javafx.scene.layout.VBox"
+         xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml/1"
+         stylesheets="@WordHunterStyleSheet.css">
+   <!--spinner-->
+   <ProgressIndicator prefHeight="46.0" prefWidth="600.0"/>
+   <!--message-->
+   <Label alignment="CENTER" blendMode="ADD" text="Reconnecting..." textFill="WHITE">
+      <font>
+         <Font size="26.0"/>
+      </font>
+   </Label>
+</fx:root>

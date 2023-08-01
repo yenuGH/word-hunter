@@ -12,7 +12,7 @@ import javafx.util.Duration;
 public class WordPane extends StackPane {
     // Constant
     // Word font
-    private static final Font FONT = new Font("Arial", 30);
+    private static final Font FONT = new Font("Arial", 20);
     public static final String BORDER = "-fx-border-color: #000000; -fx-border-width: 2px;";
     public static final Color DEFAULT_COLOR = Color.WHITE;
 
@@ -70,7 +70,11 @@ public class WordPane extends StackPane {
     }
 
     public void closeAnimation() {
-        animation.stop();
-        animation = null;
+        try
+        {
+            animation.stop();
+            animation = null;
+        }
+        catch(NullPointerException ignored){}
     }
 }

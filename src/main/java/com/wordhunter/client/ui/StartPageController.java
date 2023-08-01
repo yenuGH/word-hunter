@@ -63,13 +63,7 @@ public class StartPageController {
         clientMain.setUsername(this.username);
 
         String address = ipAddressField.getText();
-        if ((address.length() <= 11 && isNumeric(address) || address.length() == 0)) {
-            clientMain.setAddress(address);
-        } else {
-            this.label.setText("Address must be numeric!");
-            this.label.setStyle("-fx-text-fill: #ff0000; ");
-            return;
-        }
+        clientMain.setAddress(address);
         try {
             clientMain.connectServer(false);
             SceneController.getInstance().showWaitingPage();

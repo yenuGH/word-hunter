@@ -1,41 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--waiting room page. Shows players currently in server + time until game start-->
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wordhunter.client.ui.ServerPageController">
-   <children>
-      <AnchorPane layoutX="100.0" layoutY="50.0" prefHeight="100.0" prefWidth="600.0">
-         <children>
-            <Label layoutX="26.0" layoutY="21.0" text="Server IP:">
-               <font>
-                  <Font size="48.0" />
-               </font>
-            </Label>
-            <Label fx:id="serverIPLabel" layoutX="228.0" layoutY="22.0" text="XXXXXXXXXX">
-               <font>
-                  <Font size="48.0" />
-               </font>
-            </Label>
-         </children>
-      </AnchorPane>
-      <ScrollPane hbarPolicy="NEVER" layoutX="161.0" layoutY="300.0" prefHeight="200.0" prefWidth="500.0">
-         <content>
-            <ListView fx:id="playerView" prefHeight="200.0" prefWidth="500.0" />
-         </content>
+<StackPane styleClass="main_container"
+           xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.wordhunter.client.ui.ServerPageController"
+           stylesheets="@WordHunterStyleSheet.css">
+   <VBox alignment="CENTER">
+      <StackPane.margin>
+         <Insets/>
+      </StackPane.margin>
+      <padding>
+         <Insets left="50.0" right="50.0"/>
+      </padding>
+      <!-- top section-->
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+         <Label text="Server IP:">
+            <font>
+               <Font size="35.0"/>
+            </font>
+         </Label>
+         <Label fx:id="serverIPLabel" text="XXXXXXXXXX">
+            <font>
+               <Font size="35.0"/>
+            </font>
+         </Label>
+      </HBox>
+      <!-- player list -->
+      <ScrollPane hbarPolicy="NEVER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="338.0"
+                  prefWidth="700.0" VBox.vgrow="ALWAYS">
+         <VBox.margin>
+            <Insets/>
+         </VBox.margin>
+         <ListView fx:id="playerView" focusTraversable="false" mouseTransparent="true" prefHeight="400.0"
+                   prefWidth="702.0"/>
       </ScrollPane>
-      <Label fx:id="currentPlayerLabel" layoutX="161.0" layoutY="193.0" text="Current Player: " textAlignment="CENTER">
+      <!-- player name -->
+      <Label fx:id="currentPlayerLabel" alignment="CENTER" contentDisplay="CENTER" text="Current Player: ">
          <font>
-            <Font size="36.0" />
+            <Font size="30.0"/>
          </font>
       </Label>
-      <Label fx:id="startTimer" layoutX="286.0" layoutY="667.0" text="Game will start in x mins">
+      <!-- timer -->
+      <Label fx:id="startTimer" alignment="CENTER" text="Game will start in x mins">
          <font>
-            <Font size="24.0" />
+            <Font size="24.0"/>
          </font>
       </Label>
-   </children>
-</AnchorPane>
+   </VBox>
+</StackPane>
