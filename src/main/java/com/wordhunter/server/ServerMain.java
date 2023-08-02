@@ -99,7 +99,7 @@ public class ServerMain extends Thread
         try
         {
             timerStartTime = System.nanoTime();
-            Thread.sleep(startGameTimeMin * 6000);
+            Thread.sleep(startGameTimeMin * 60000);
             ServerMain.serverState = ServerState.GAME_IN_PROGRESS;
         }
         catch (InterruptedException e)
