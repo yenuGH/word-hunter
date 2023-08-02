@@ -1,7 +1,6 @@
 package com.wordhunter.client.logic;
 
 import com.wordhunter.client.ui.SceneController;
-import com.wordhunter.client.ui.ServerPageController;
 import com.wordhunter.client.ui.WordHunterController;
 import com.wordhunter.conversion.PlayerConversion;
 import com.wordhunter.conversion.WordConversion;
@@ -188,15 +187,11 @@ class ClientListening extends Thread {
     }
 
     public void displayGameScreen(String input) {
-        Platform.runLater(() -> {
-            this.wordHunterController = SceneController.getInstance().showGamePage();
-        });
+        Platform.runLater(() -> this.wordHunterController = SceneController.getInstance().showGamePage());
     }
 
     public void endGameScreen(String input) {
-        Platform.runLater(() -> {
-            SceneController.getInstance().closeStage();
-        });
+        Platform.runLater(() -> SceneController.getInstance().closeStage());
     }
 
     /**
@@ -204,14 +199,15 @@ class ClientListening extends Thread {
      * @param input message from server
      */
     public void processNewWord(String input) {
+        // get lock
+        if (!getWordsListLock())
+        {
+            return;
+        }
+
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word newWord = WordConversion.toWord(tokenList[1]);
 
-        try {
-            ClientMain.clientWordsListLock.acquire();
-        } catch (InterruptedException e) {
-            System.out.println("unable to acquire the lock for client's wordsList");
-        }
         ClientMain.wordsList.add(newWord);
 
         if (wordHunterController != null) {
@@ -223,76 +219,110 @@ class ClientListening extends Thread {
         ClientMain.clientWordsListLock.release();
     }
 
+    /**
+     * getWordsListLock()
+     * try to get clientWordsListLock
+     * @return true if success, false if fail
+     */
+    public boolean getWordsListLock()
+    {
+        try
+        {
+            ClientMain.clientWordsListLock.acquire();
+            return true;
+        }
+        catch (InterruptedException e)
+        {
+            System.out.println("unable to acquire the lock for client's wordsList");
+            return false;
+        }
+    }
+
     public void handleCompletedWord(String input) {
+        // get lock
+        if (!getWordsListLock())
+        {
+            return;
+        }
+
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word removedWord = WordConversion.toWord(tokenList[1]);
 
-        try {
-            ClientMain.clientWordsListLock.acquire();
-        } catch (InterruptedException e) {
-            System.out.println("unable to acquire the lock for client's wordsList");
-        }
         ClientMain.wordsList.remove(removedWord);
 
         Platform.runLater(() -> {
-            wordHunterController.clearWordPaneText(removedWord);
-            wordHunterController.stopAnimation(removedWord);
+            if (wordHunterController != null) {
+                wordHunterController.clearWordPaneText(removedWord);
+                wordHunterController.stopAnimation(removedWord);
+            }
         });
 
         ClientMain.clientWordsListLock.release();
     }
 
     public void handleReserveWord(String input) {
+        // get lock
+        if (!getWordsListLock())
+        {
+            return;
+        }
+
+        // get reserved word
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word reservedWord = WordConversion.toWord(tokenList[1]);
 
-        try {
-            ClientMain.clientWordsListLock.acquire();
-        } catch (InterruptedException e) {
-            System.out.println("unable to acquire the lock for client's wordsList");
-        }
-        for (Word word : ClientMain.wordsList) {
-            if (reservedWord.equals(word)) {
-                word.setState(WordState.RESERVED);
-                word.setColor(reservedWord.getColor());
+        // if word in list
+        int index = ClientMain.wordsList.indexOf(reservedWord);
+        if(index != -1 )
+        {
+            Word word = ClientMain.wordsList.get(index);
+            word.setState(WordState.RESERVED);
+            word.setColor(reservedWord.getColor());
 
-                Platform.runLater(() -> {
-                    wordHunterController.setWordPaneTextColor(reservedWord);
-                    wordHunterController.startAnimation(reservedWord);
-                });
-
-                if (reservedWord.getColor().equals(ClientMain.colorId)) {
-                    Platform.runLater(() -> {
-                        wordHunterController.reservedWord = reservedWord;
-                    });
+            // set to player color
+            Platform.runLater(() -> {
+                if (wordHunterController != null) {
+                    wordHunterController.setWordPaneTextColor(word);
+                    wordHunterController.startAnimation(word);
                 }
-                break;
+            });
+
+            // is current player
+            if (reservedWord.getColor().equals(ClientMain.colorId))
+            {
+                Platform.runLater(() -> {
+                    if (wordHunterController != null) {
+                        wordHunterController.reservedWord = word;
+                    }
+                });
             }
         }
         ClientMain.clientWordsListLock.release();
     }
 
     public void handleReopenWord(String input) {
+        // get lock
+        if (!getWordsListLock())
+        {
+            return;
+        }
+
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word reopenWord = WordConversion.toWord(tokenList[1]);
 
-        try {
-            ClientMain.clientWordsListLock.acquire();
-        } catch (InterruptedException e) {
-            System.out.println("unable to acquire the lock for client's wordsList");
-        }
-        for (Word word : ClientMain.wordsList) {
-            if (reopenWord.equals(word)) {
-                word.setState(WordState.OPEN);
-                word.setColor(reopenWord.getColor());
+        int index = ClientMain.wordsList.indexOf(reopenWord);
+        if(index != -1 )
+        {
+            Word word = ClientMain.wordsList.get(index);
+            word.setState(WordState.OPEN);
+            word.setColor(reopenWord.getColor());
 
-                Platform.runLater(() -> {
-                    wordHunterController.clearWordPaneColor(reopenWord);
-                    wordHunterController.startAnimation(reopenWord);
-                });
-
-                break;
-            }
+            Platform.runLater(() -> {
+                if (wordHunterController != null) {
+                    wordHunterController.clearWordPaneColor(word);
+                    wordHunterController.startAnimation(word);
+                }
+            });
         }
         ClientMain.clientWordsListLock.release();
     }

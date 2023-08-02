@@ -8,12 +8,30 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.util.Callback;
 
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
+
+
+/**
+ * PlayerListCell
+ * used to display usernames with their assigned colors on waiting page
+ */
+class PlayerListCell extends Label
+{
+    public PlayerListCell(Player player)
+    {
+        this.setText(player.getName());
+        this.setStyle("-fx-text-fill: " + player.getColor() + ";");
+    }
+}
 
 public class ServerPageController{
     @FXML
@@ -26,12 +44,14 @@ public class ServerPageController{
     public Label startTimer;
 
     @FXML
-    public ListView<String> playerView;
-    private ObservableList<String> playerList = FXCollections.observableList(new ArrayList<>());
+    public ListView<PlayerListCell> playerView;
+    private ObservableList<PlayerListCell> playerViewList = FXCollections.observableList(new ArrayList<>());
+    private Vector<Player> playerList = new Vector<>();
 
     @FXML
-    public void initialize(){
-        playerView.setItems(playerList);
+    public void initialize()
+    {
+        playerView.setItems(playerViewList);
         ClientMain.getInstance().setServerPageController(this);
     }
 
@@ -72,13 +92,13 @@ public class ServerPageController{
     }
 
     public void updatePlayerList(Vector<Player> updatedPlayerList){
-        for (Player player : updatedPlayerList){
-            if (!playerList.contains(player.getName())){
-                Platform.runLater(() -> {
-                    playerList.add(player.getName());
-                });
+        for (Player player : updatedPlayerList)
+        {
+            if (!playerList.contains(player))
+            {
+                playerList.add(player);
+                Platform.runLater(() -> playerViewList.add(new PlayerListCell(player)));
             }
-
         }
     }
 }

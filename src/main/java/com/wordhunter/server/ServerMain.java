@@ -44,6 +44,7 @@ class WordTimerTask extends TimerTask {
             ServerMain.wordsListLock.acquire();
         } catch (InterruptedException e) {
             System.out.println("unable to lock the words list access");
+            return;
         }
         // Remove once the TTL of the word is done
         ServerMain.wordsList.remove(currentWord);
@@ -98,7 +99,7 @@ public class ServerMain extends Thread
         try
         {
             timerStartTime = System.nanoTime();
-            Thread.sleep(startGameTimeMin * 60000);
+            Thread.sleep(startGameTimeMin * 6000);
             ServerMain.serverState = ServerState.GAME_IN_PROGRESS;
         }
         catch (InterruptedException e)

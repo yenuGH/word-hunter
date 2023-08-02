@@ -68,8 +68,8 @@ public class ClientMain
     public static Socket sock;              // socket connected to server
 
     // game variables
-    public String username;        // temporary: entered by client later. move to player class?
-    public static String colorId = "#DC143C";
+    public String username;
+    public static String colorId = "";       // leave this empty
     public static final Vector<Word> wordsList = new Vector<>();
     public Vector<Player> players;
 
@@ -78,13 +78,11 @@ public class ClientMain
     // Singleton
     public static ClientMain getInstance() {
         if (clientMainInstance == null) {
-            try {
+            try
+            {
                 clientMainInstance = new ClientMain();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+            catch (IOException | InterruptedException ignored) {}
         }
         return clientMainInstance;
     }

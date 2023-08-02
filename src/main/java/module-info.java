@@ -1,4 +1,4 @@
-module com.example.word_hunter {
+module word_hunter {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;

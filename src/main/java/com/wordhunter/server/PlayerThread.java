@@ -1,6 +1,5 @@
 package com.wordhunter.server;
 
-import com.wordhunter.client.logic.ClientMain;
 import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Word;
 import com.wordhunter.models.WordGenerator;
@@ -147,15 +146,32 @@ class PlayerThread extends Thread {
         ServerMain.sendMessageToClient(sock, "");
     }
 
-    public void handleCompletedWord(String input) {
+    public boolean getWordsListLock()
+    {
+        try
+        {
+            ServerMain.wordsListLock.acquire();
+            return true;
+        }
+        catch (InterruptedException e)
+        {
+            System.out.println("unable to lock the words list access");
+            return false;
+        }
+    }
+
+    public void handleCompletedWord(String input)
+    {
+        // get lock
+        if(!getWordsListLock())
+        {
+            return;
+        }
+
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word target = WordConversion.toWord(tokenList[1]);
 
-        try {
-            ServerMain.wordsListLock.acquire();
-        } catch (InterruptedException e) {
-            System.out.println("unable to lock the words list access");
-        }
+
         ServerMain.wordsList.remove(target);
         System.out.println("Size of wordlist " + ServerMain.wordsList.size());
 
@@ -168,18 +184,20 @@ class PlayerThread extends Thread {
         Word newWord = WordGenerator.generateNewWord();
         ServerMain.wordsList.add(newWord);
         ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
+
         ServerMain.wordsListLock.release();
     }
 
     public void handleReserveWord(String input) {
+        // get lock
+        if(!getWordsListLock())
+        {
+            return;
+        }
+
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word target = WordConversion.toWord(tokenList[1]);
 
-        try {
-            ServerMain.wordsListLock.acquire();
-        } catch (InterruptedException e) {
-            System.out.println("unable to lock the words list access");
-        }
         for (Word word : ServerMain.wordsList) {
             if (target.equals(word) && word.getState() == WordState.OPEN) {
                 word.setState(WordState.RESERVED);
@@ -192,14 +210,15 @@ class PlayerThread extends Thread {
     }
 
     public void handleReopenWord(String input) {
+        // get lock
+        if(!getWordsListLock())
+        {
+            return;
+        }
+
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word target = WordConversion.toWord(tokenList[1]);
 
-        try {
-           ServerMain.wordsListLock.acquire();
-        } catch (InterruptedException e) {
-            System.out.println("unable to lock the words list access");
-        }
         for (Word word : ServerMain.wordsList) {
             if (target.equals(word) && word.getState() == WordState.RESERVED) {
                 word.setState(WordState.OPEN);
@@ -210,5 +229,4 @@ class PlayerThread extends Thread {
         }
         ServerMain.wordsListLock.release();
     }
-
 }
