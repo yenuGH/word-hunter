@@ -29,7 +29,7 @@ class PlayerListCell extends Label
     public PlayerListCell(Player player)
     {
         this.setText(player.getName());
-        this.setStyle("-fx-text-fill: " + player.getColor() + ";");
+        this.setStyle("-fx-background-radius: 10;-fx-text-fill: " + player.getColor() + ";");
     }
 }
 

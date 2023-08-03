@@ -34,12 +34,12 @@ class ServerAcceptClients extends Thread {
      */
     public ServerAcceptClients() {
         // setup color vector
-        colorIds.add("#F00");
-        colorIds.add("#0F0");
-        colorIds.add("#00F");
-        colorIds.add("#F0F");
-        colorIds.add("#FF0");
-        colorIds.add("#0FF");
+        colorIds.add("#8b5dc8"); // purple
+        colorIds.add("#5dc866"); // green
+        colorIds.add("#c8c15d"); // yellow
+        colorIds.add("#5d6fc8"); // blue
+        colorIds.add("#c85daf"); // pink
+        colorIds.add("#c87b5d"); // orange
     }
 
 
@@ -124,6 +124,9 @@ class ServerAcceptClients extends Thread {
                         {
                             ServerMain.sendMessageToClient(client, "error" + ServerMain.messageDelimiter
                                     + "username taken");
+                            in.close();
+                            client.close();
+                            continue;
                         }
                         // create player obj and store socket in there
                         newPlayerJoinHandle(msg[1], client);

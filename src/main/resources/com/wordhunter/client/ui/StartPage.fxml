@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--start page. Gives option to create or join server. gets username + server IP-->
 
 <?import javafx.geometry.Insets?>
@@ -8,51 +9,46 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<VBox alignment="CENTER" spacing="10.0" styleClass="main_container"
-      xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.wordhunter.client.ui.StartPageController"
-      stylesheets="@WordHunterStyleSheet.css">
+<VBox id="main_page_bg" alignment="CENTER" spacing="10.0" styleClass="main_container" stylesheets="@WordHunterStyleSheet.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wordhunter.client.ui.StartPageController">
    <padding>
-      <Insets left="50.0" right="50.0"/>
+      <Insets left="50.0" right="50.0" />
    </padding>
    <!--title-->
    <Label text="Welcome to Word Hunter!!!!">
       <font>
-         <Font size="48.0"/>
+         <Font size="48.0" />
       </font>
       <VBox.margin>
-         <Insets bottom="30.0"/>
+         <Insets bottom="30.0" />
       </VBox.margin>
    </Label>
    <!--username enter-->
    <Label text="Enter your username:" textAlignment="CENTER">
       <font>
-         <Font size="24.0"/>
+         <Font size="24.0" />
       </font>
    </Label>
-   <TextField fx:id="usernameField" maxWidth="-Infinity" prefHeight="25.0" prefWidth="300.0"/>
+   <TextField fx:id="usernameField" maxWidth="-Infinity" prefHeight="25.0" prefWidth="300.0" />
    <!--create server-->
-   <Button mnemonicParsing="false" onAction="#createButtonClicked" prefHeight="50.0" prefWidth="300.0"
-           text="Create Server">
+   <Button mnemonicParsing="false" onAction="#createButtonClicked" prefHeight="50.0" prefWidth="300.0" text="Create Server">
       <font>
-         <Font size="36.0"/>
+         <Font size="36.0" />
       </font>
       <VBox.margin>
-         <Insets bottom="30.0"/>
+         <Insets bottom="30.0" />
       </VBox.margin>
    </Button>
    <!--server IP enter-->
    <Label fx:id="label" text="Enter Server's IP address.">
       <font>
-         <Font size="24.0"/>
+         <Font size="24.0" />
       </font>
    </Label>
-   <TextField fx:id="ipAddressField" alignment="CENTER" maxWidth="-Infinity" prefHeight="25.0" prefWidth="300.0"/>
+   <TextField fx:id="ipAddressField" alignment="CENTER" maxWidth="-Infinity" prefHeight="25.0" prefWidth="300.0" />
    <!--join server-->
    <Button mnemonicParsing="false" onAction="#joinButtonClicked" prefHeight="50.0" prefWidth="300.0" text="Join Server">
       <font>
-         <Font size="36.0"/>
+         <Font size="36.0" />
       </font>
    </Button>
 </VBox>

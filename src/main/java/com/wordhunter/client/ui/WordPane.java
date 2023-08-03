@@ -13,7 +13,7 @@ public class WordPane extends StackPane {
     // Constant
     // Word font
     private static final Font FONT = new Font("Arial", 20);
-    public static final String BORDER = "-fx-border-color: #000000; -fx-border-width: 2px;";
+    public static final String BORDER = "-fx-border-color: -border-color; -fx-border-width: 2;";
     public static final Color DEFAULT_COLOR = Color.WHITE;
 
     // Member variables
@@ -62,11 +62,14 @@ public class WordPane extends StackPane {
         if (animation != null) {
             closeAnimation();
         }
-        animation = new FadeTransition(Duration.millis(interval), this.label);
-        animation.setFromValue(1);
-        animation.setToValue(0);
-        animation.setCycleCount(1);
-        animation.play();
+        if (interval > 0) {
+            animation = new FadeTransition(Duration.millis(interval), this.label);
+            double currentOpacity = this.label.getOpacity();
+            animation.setFromValue(currentOpacity);
+            animation.setToValue(0);
+            animation.setCycleCount(1);
+            animation.play();
+        }
     }
 
     public void closeAnimation() {

@@ -13,13 +13,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane minHeight="-Infinity" minWidth="-Infinity" styleClass="main_container"
-           stylesheets="@WordHunterStyleSheet.css"
-           xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.wordhunter.client.ui.WordHunterController">
-    <VBox alignment="CENTER" spacing="10.0">
+<StackPane minHeight="-Infinity" minWidth="-Infinity" styleClass="main_container" stylesheets="@WordHunterStyleSheet.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wordhunter.client.ui.WordHunterController">
+    <VBox alignment="CENTER" spacing="10.0" styleClass="secondary_container">
         <padding>
-            <Insets bottom="30.0" left="50.0" right="50.0" top="30.0" />
+            <Insets bottom="10.0" left="30.0" right="30.0" top="10.0" />
         </padding>
         <!--health bar-->
         <HBox alignment="CENTER" VBox.vgrow="NEVER">
@@ -35,7 +32,7 @@
             </Label>
         </HBox>
         <!--main grid-->
-        <GridPane fx:id="grids" alignment="CENTER" scaleShape="false" style="-fx-background-color: #00000011;" VBox.vgrow="SOMETIMES">
+        <GridPane id="grid" fx:id="grids" alignment="CENTER" scaleShape="false" VBox.vgrow="ALWAYS">
             <columnConstraints>
                 <ColumnConstraints percentWidth="20.0" />
                 <ColumnConstraints percentWidth="20.0" />
@@ -52,10 +49,13 @@
             </rowConstraints>
         </GridPane>
         <!--text input-->
-        <TextField fx:id="userInputField" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="600.0" promptText="Start Typing a Word on Screen...">
-            <font>
-                <Font size="21.0" />
-            </font>
+        <TextField id="userInput" fx:id="userInputField" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="40.0" prefWidth="600.0" promptText="Start Typing a Word on Screen..." VBox.vgrow="NEVER">
+         <font>
+            <Font size="20.0" />
+         </font>
         </TextField>
+      <StackPane.margin>
+         <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+      </StackPane.margin>
     </VBox>
 </StackPane>

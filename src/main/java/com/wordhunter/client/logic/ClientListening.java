@@ -156,6 +156,9 @@ class ClientListening extends Thread {
         // get own color id
         if (parent.colorId.isEmpty()) {
             parent.colorId = players.elementAt(players.size() - 1).getColor();
+            Platform.runLater(() -> {
+                SceneController.getInstance().setMainColor(parent.colorId);
+            });
         }
 
         Platform.runLater(() -> {
@@ -191,7 +194,10 @@ class ClientListening extends Thread {
     }
 
     public void displayGameScreen(String input) {
-        Platform.runLater(() -> this.wordHunterController = SceneController.getInstance().showGamePage());
+        Platform.runLater(() -> {
+            this.wordHunterController = SceneController.getInstance().showGamePage();
+            SceneController.getInstance().setMainColor(parent.colorId);
+        });
     }
 
     public void endGameScreen(String input) {
@@ -200,7 +206,10 @@ class ClientListening extends Thread {
         //TODO: have an end screen and put the winner here
         System.out.println("Winner is " + winner.getName() + " with score " + winner.getScore());
 
-        Platform.runLater(() -> SceneController.getInstance().closeStage());
+        Platform.runLater(() -> {
+            SceneController.getInstance().closeStage();
+            SceneController.getInstance().setMainColor(parent.colorId);
+        });
     }
 
     /**
