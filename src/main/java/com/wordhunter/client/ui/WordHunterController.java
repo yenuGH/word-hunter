@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Vector;
 
 public class WordHunterController {
@@ -126,17 +127,23 @@ public class WordHunterController {
                 Word targetWord = findTarget(newInput);
                 if (newInput.length() == 1) {
                     if (targetWord == null) {
-                        // Case 1: word is not found, or word has been reserved
+                        // Case 1: word is not found
                         // TODO: add a warning message on the screen
                         System.out.println("Warning: word is not found, or it it reserved");
                         clearUserInput();
                     } else {
                         // Case 2: word is found, reserve the word
                         String requestedWordStr = WordConversion.fromWord(targetWord);
-
                         Word requestedWord = WordConversion.toWord(requestedWordStr);
-                        requestedWord.setColor(ClientMain.colorId);
-                        requestWordStateChanged(requestedWord, "reserveWord");
+                        // if the word color is default (unreserved)
+                        if (Objects.equals(requestedWord.getColor(), "#000000")) {
+                            requestedWord.setColor(ClientMain.colorId);
+                            requestWordStateChanged(requestedWord, "reserveWord");
+                        } else {
+                            // if the word is already colored and thus reserved
+                            clearUserInput();
+                        }
+
                     }
 
                 } else {

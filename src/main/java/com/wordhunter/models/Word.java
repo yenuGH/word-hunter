@@ -18,7 +18,7 @@ public class Word implements Serializable {
     public Word(String word, int x, int y) {
         this.word = word;
         this.state = WordState.OPEN;
-        this.color = "#F00";
+        this.color = "#000000";
         this.posX = x;
         this.posY = y;
         this.expiredTime = System.currentTimeMillis() + generateTimeToLive();
