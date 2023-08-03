@@ -45,6 +45,10 @@ public class Player implements Serializable {
         this.score = score;
     }
 
+    public void addScore(int points) {
+        this.score += points;
+    }
+
     public Socket getSocket() {
         return socket;
     }

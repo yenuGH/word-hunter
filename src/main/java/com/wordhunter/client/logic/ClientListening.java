@@ -191,6 +191,11 @@ class ClientListening extends Thread {
     }
 
     public void endGameScreen(String input) {
+        String[] tokenList = input.split(ServerMain.messageDelimiter);
+        Player winner = PlayerConversion.toPlayer((tokenList[1]));
+        //TODO: have an end screen and put the winner here
+        System.out.println("Winner is " + winner.getName() + " with score " + winner.getScore());
+
         Platform.runLater(() -> SceneController.getInstance().closeStage());
     }
 

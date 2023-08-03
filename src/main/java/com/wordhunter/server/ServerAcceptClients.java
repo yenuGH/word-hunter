@@ -171,12 +171,13 @@ class ServerAcceptClients extends Thread {
             int playerCount = ServerMain.playerList.size() + 1;
             System.out.println("creating player " + playerCount + ": " + username);
 
+            Player newPlayer = new Player(username, colorIds.remove(0), client);
             // add player to list and create listening thread
             ServerMain.playerList.add(
-                    new Player(username, colorIds.remove(0), client)
+                    newPlayer
             );
 
-            PlayerThread newPlayerThread = new PlayerThread(this, client, playerCount - 1);
+            PlayerThread newPlayerThread = new PlayerThread(this, client, playerCount - 1, newPlayer);
             newPlayerThread.start();
 
             // broadcast new player list and color ids
@@ -207,11 +208,12 @@ class ServerAcceptClients extends Thread {
         int playerCount = ServerMain.playerList.size() + 1;
         System.out.println("re-adding " + username + " as player " + playerCount);
 
+        Player newPlayer = new Player(username, colorIds.remove(0), client);
         // add player to list and create listening thread
         ServerMain.playerList.add(
-                new Player(username, colorIds.remove(0), client)
+                newPlayer
         );
-        PlayerThread newPlayerThread = new PlayerThread(this, client, playerCount - 1);
+        PlayerThread newPlayerThread = new PlayerThread(this, client, playerCount - 1, newPlayer);
         newPlayerThread.start();
 
         // broadcast reconnected player username + colorId

@@ -32,7 +32,8 @@ public class Word implements Serializable {
     }
 
     public long getTimeToLiveRemaining() {
-        return expiredTime - System.currentTimeMillis();
+        long timeRemaining = expiredTime - System.currentTimeMillis();
+        return Math.max(0, timeRemaining);
     }
 
     public String getWord() {

@@ -8,6 +8,15 @@ import java.util.Vector;
 
 public class PlayerConversion {
 
+    public static String fromPlayer(Player player) {
+        Gson gson = new Gson();
+        return gson.toJson(player);
+    }
+
+    public static Player toPlayer(String serializedData) {
+        Gson gson = new Gson();
+        return gson.fromJson(serializedData, new TypeToken<Player>(){}.getType());
+    }
     public static String fromPlayers(Vector<Player> players) {
         Gson gson = new Gson();
         return gson.toJson(players);

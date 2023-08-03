@@ -13,6 +13,7 @@ package com.wordhunter.server;
  */
 
 
+import com.wordhunter.conversion.PlayerConversion;
 import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Player;
 import com.wordhunter.models.Word;
@@ -146,9 +147,26 @@ public class ServerMain extends Thread
             System.out.println("server timer interrupted");
         }
 
+        Player winner = findWinner();
         // TODO: add scores to message
-        broadcast("gameOver");
+        broadcast("gameOver" + ServerMain.messageDelimiter + PlayerConversion.fromPlayer(winner));
         // TODO: clean up sockets (from client side? add option to start new game?)
+        System.exit(0);
+    }
+
+    public static Player findWinner() {
+        if (playerList.isEmpty()) {
+            return null; // Return null if the playerList is empty
+        }
+
+        Player winner = playerList.get(0);
+
+        for (Player player : playerList) {
+            if (player.getScore() > winner.getScore()) {
+                winner = player;
+            }
+        }
+        return winner;
     }
 
     /**

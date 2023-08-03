@@ -24,6 +24,7 @@ import java.util.concurrent.*;
  */
 class PlayerThread extends Thread {
     // change these to player class when implemented
+    private Player player;
     private final int index;
     private final Socket sock;
 
@@ -50,10 +51,11 @@ class PlayerThread extends Thread {
      * @param aSock   client socket
      * @param anIndex index in clientSocks
      */
-    public PlayerThread(ServerAcceptClients aParent, Socket aSock, int anIndex) {
+    public PlayerThread(ServerAcceptClients aParent, Socket aSock, int anIndex, Player player) {
         parent = aParent;
         sock = aSock;
         index = anIndex;
+        this.player = player;
 
         // setup message callbacks
         messageToCallback.put("", PlayerThread::handleHeartBeat);
@@ -172,6 +174,8 @@ class PlayerThread extends Thread {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word target = WordConversion.toWord(tokenList[1]);
 
+        this.player.addScore(target.getWord().length());
+        System.out.println("Player " + player.getName() + "'s score is " + this.player.getScore());
 
         ServerMain.wordsList.remove(target);
         System.out.println("Size of wordlist " + ServerMain.wordsList.size());
