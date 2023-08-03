@@ -1,6 +1,7 @@
 package com.wordhunter.server;
 
 import com.wordhunter.conversion.WordConversion;
+import com.wordhunter.models.Player;
 import com.wordhunter.models.Word;
 import com.wordhunter.models.WordGenerator;
 import com.wordhunter.models.WordState;

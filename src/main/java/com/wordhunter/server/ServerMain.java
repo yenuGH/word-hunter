@@ -50,7 +50,14 @@ class WordTimerTask extends TimerTask {
         ServerMain.wordsList.remove(currentWord);
         ServerMain.broadcast("removeWord" + ServerMain.messageDelimiter + WordConversion.fromWord(currentWord));
 
+        Word newWord = WordGenerator.generateNewWord();
+        ServerMain.wordsList.add(newWord);
+        ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
+
         ServerMain.wordsListLock.release();
+
+        Timer timer = new Timer();
+        timer.schedule(new WordTimerTask(newWord), newWord.generateTimeToLive());
     }
 }
 
@@ -99,7 +106,8 @@ public class ServerMain extends Thread
         try
         {
             timerStartTime = System.nanoTime();
-            Thread.sleep(startGameTimeMin * 60000);
+            // TODO: CHANGE THIS TIMER BACK TO 60; it's 15 for testing
+            Thread.sleep(startGameTimeMin * 15000);
             ServerMain.serverState = ServerState.GAME_IN_PROGRESS;
         }
         catch (InterruptedException e)
