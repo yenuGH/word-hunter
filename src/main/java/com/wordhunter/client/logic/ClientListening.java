@@ -91,14 +91,10 @@ class ClientListening extends Thread {
             } catch (IOException e) // disconnect throws SocketException
             {
                 System.out.println("failed to read from socket. disconnecting...");
-                try {
-                    e.printStackTrace();
-                    disconnect();
-                    System.out.println("disconnected");
-                } catch (IOException ex) {
-                    System.out.println("server down");
-                    System.exit(0);
-                }
+                e.printStackTrace();
+
+                System.out.println("disconnected");
+                System.exit(0);
                 break;
             }
         }

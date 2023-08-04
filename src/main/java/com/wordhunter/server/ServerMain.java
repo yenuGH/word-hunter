@@ -190,6 +190,7 @@ public class ServerMain extends Thread
         catch (IOException e)
         {
             System.out.println("Failed to get client output stream");
+            e.printStackTrace();
         }
     }
 }
