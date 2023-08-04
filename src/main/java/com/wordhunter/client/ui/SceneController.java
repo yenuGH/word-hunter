@@ -96,6 +96,20 @@ public class SceneController {
         return fxmlLoader.getController();
     }
 
+    public void showWinnerPage() {
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("WinnerPage.fxml")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Scene scene = new Scene(Objects.requireNonNull(root));
+        this.scene = scene;
+
+        stage.setScene(scene);
+        stage.show();
+    }
+
     /**
      * setStage()
      * set stage, resize window to fit screen, bind close button to close entire app

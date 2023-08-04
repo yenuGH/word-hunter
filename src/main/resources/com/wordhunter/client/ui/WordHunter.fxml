@@ -13,22 +13,19 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane minHeight="-Infinity" minWidth="-Infinity" styleClass="main_container"
-           stylesheets="@WordHunterStyleSheet.css"
-           xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.wordhunter.client.ui.WordHunterController">
+<StackPane minHeight="-Infinity" minWidth="-Infinity" styleClass="main_container" stylesheets="@WordHunterStyleSheet.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wordhunter.client.ui.WordHunterController">
     <VBox alignment="CENTER" spacing="10.0">
         <padding>
             <Insets bottom="30.0" left="50.0" right="50.0" top="30.0" />
         </padding>
         <!--health bar-->
         <HBox alignment="CENTER" VBox.vgrow="NEVER">
-            <Label text="Health:" HBox.hgrow="SOMETIMES">
+            <Label text="Score: " HBox.hgrow="SOMETIMES">
                 <font>
                     <Font size="20.0" />
                 </font>
             </Label>
-            <Label fx:id="healthBar" text="1000">
+            <Label fx:id="playerScore" text="0">
                 <font>
                     <Font size="20.0" />
                 </font>

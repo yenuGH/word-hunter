@@ -18,6 +18,7 @@ import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Player;
 import com.wordhunter.models.Word;
 import com.wordhunter.models.WordGenerator;
+import com.wordhunter.models.WordList;
 
 import java.io.*;
 import java.net.Socket;
@@ -41,21 +42,15 @@ class WordTimerTask extends TimerTask {
         this.currentWord = word;
     }
     public void run() {
-        try {
-            ServerMain.wordsListLock.acquire();
-        } catch (InterruptedException e) {
-            System.out.println("unable to lock the words list access");
-            return;
-        }
         // Remove once the TTL of the word is done
-        ServerMain.wordsList.remove(currentWord);
-        ServerMain.broadcast("removeWord" + ServerMain.messageDelimiter + WordConversion.fromWord(currentWord));
+        //ServerMain.wordsList.remove(currentWord);
+        ServerMain.wordsList.set(currentWord.getWordID(), null);
+        ServerMain.broadcast("removeWord" + ServerMain.messageDelimiter + currentWord.getWordID() + ServerMain.messageDelimiter + 0);
 
         Word newWord = WordGenerator.generateNewWord();
-        ServerMain.wordsList.add(newWord);
+        //ServerMain.wordsList.add(newWord);
+        ServerMain.wordsList.set(newWord.getWordID(), newWord);
         ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
-
-        ServerMain.wordsListLock.release();
 
         Timer timer = new Timer();
         timer.schedule(new WordTimerTask(newWord), newWord.generateTimeToLive());
@@ -82,13 +77,16 @@ public class ServerMain extends Thread
     public static ServerState serverState = ServerState.STARTED;
     public static long timerStartTime;
 
-    public static final Semaphore wordsListLock = new Semaphore(1);
-
     // game variables
-    public final static int wordLimit = 15;
+    public final static int wordLimit = 10;
     public final static int dimension = 5;
-    public static final Vector<Word> wordsList = new Vector<>();
+    public static WordList wordsList;
     public final static String defaultColor = "#000000";
+
+    public ServerMain()
+    {
+        this.wordsList = new WordList(25);
+    }
 
     /**
      * main()
@@ -96,6 +94,10 @@ public class ServerMain extends Thread
      */
     public void run()
     {
+//        for (int i = 0; i < 25; i++) {
+//            wordsList.add(null);
+//        }
+
         System.out.println("starting server");
         WordGenerator.readDictionary();
 
@@ -127,7 +129,7 @@ public class ServerMain extends Thread
         // generating words and broadcast each word to all client
         for (int i = 0; i < wordLimit; i++) {
             Word newWord = WordGenerator.generateNewWord();
-            wordsList.add(newWord);
+            wordsList.set(newWord.getWordID(), newWord);
             ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
 
             Timer timer = new Timer();
@@ -147,26 +149,9 @@ public class ServerMain extends Thread
             System.out.println("server timer interrupted");
         }
 
-        Player winner = findWinner();
-        // TODO: add scores to message
-        broadcast("gameOver" + ServerMain.messageDelimiter + PlayerConversion.fromPlayer(winner));
+        broadcast("gameOver" + ServerMain.messageDelimiter + PlayerConversion.fromPlayers(ServerMain.playerList));
         // TODO: clean up sockets (from client side? add option to start new game?)
-        System.exit(0);
-    }
-
-    public static Player findWinner() {
-        if (playerList.isEmpty()) {
-            return null; // Return null if the playerList is empty
-        }
-
-        Player winner = playerList.get(0);
-
-        for (Player player : playerList) {
-            if (player.getScore() > winner.getScore()) {
-                winner = player;
-            }
-        }
-        return winner;
+        //System.exit(0);
     }
 
     /**
@@ -205,6 +190,7 @@ public class ServerMain extends Thread
         catch (IOException e)
         {
             System.out.println("Failed to get client output stream");
+            e.printStackTrace();
         }
     }
 }

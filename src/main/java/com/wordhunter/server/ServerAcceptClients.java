@@ -54,18 +54,24 @@ class ServerAcceptClients extends Thread {
             playerColorListLock.acquire();
 
             // remove from server lists
-            Player removedPlayer = ServerMain.playerList.remove(index);
-            colorIds.add(removedPlayer.getColor());
-            // store for allowing reconnect attempt
-            disconnectedPlayerList.add(removedPlayer);
+            try {
+                Player removedPlayer = ServerMain.playerList.remove(index);
+                colorIds.add(removedPlayer.getColor());
+                // store for allowing reconnect attempt
+                disconnectedPlayerList.add(removedPlayer);
 
-            // broadcast updated player list and color ids
-            ServerMain.broadcast("playerDisconnect" + ServerMain.messageDelimiter
-                    + "playerList" + ServerMain.messageDelimiter
-                    + ","
-                    + PlayerConversion.fromPlayers(ServerMain.playerList)
-                    + ServerMain.messageDelimiter);
-            playerColorListLock.release();
+                // broadcast updated player list and color ids
+                ServerMain.broadcast("playerDisconnect" + ServerMain.messageDelimiter
+                        + "playerList" + ServerMain.messageDelimiter
+                        + ","
+                        + PlayerConversion.fromPlayers(ServerMain.playerList)
+                        + ServerMain.messageDelimiter);
+                playerColorListLock.release();
+            }
+            catch (ArrayIndexOutOfBoundsException e){
+                System.out.println("Game has already ended, no players to remove.");
+            }
+
         } catch (InterruptedException ignored) {
         }
     }

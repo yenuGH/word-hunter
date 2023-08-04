@@ -10,7 +10,7 @@ import java.util.Vector;
 
 public class WordGenerator {
 
-    public final static int dimension = 5;
+    public final static int dimension = 25;
     public static final Vector<String> dictionary = new Vector<>();
 
     /**
@@ -42,35 +42,39 @@ public class WordGenerator {
             newWord = dictionary.get(rand.nextInt(dictionary.size()));
         }
 
-        int x = rand.nextInt(dimension);
-        int y = rand.nextInt(dimension);
-        while (checkOccupiedSpot(x, y, ServerMain.wordsList)) {
-            x = rand.nextInt(dimension);
-            y = rand.nextInt(dimension);
+        int wordID = rand.nextInt(dimension);
+        while (checkOccupiedSpot(wordID, ServerMain.wordsList)) {
+            wordID = rand.nextInt(dimension);
         }
 
         // Broadcast new word to all clients
-        Word word = new Word(newWord, x, y);
+        Word word = new Word(newWord, wordID);
+        ServerMain.wordsList.release(wordID);
         return word;
     }
 
-    private static boolean checkDuplicateChar(String word, Vector<Word> wordsList)
+    private static boolean checkDuplicateChar(String wordStr, WordList wordsList)
     {
-        for (int i = 0; i < wordsList.size(); i++) {
-            if (word.charAt(0) == wordsList.get(i).getWord().charAt(0)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    private static boolean checkOccupiedSpot(int x, int y, Vector<Word> wordsList)
-    {
-        for (int i = 0; i < wordsList.size(); i++) {
+        boolean result = false;
+        for (int i = 0; i < wordsList.getSize(); i++) {
             Word word = wordsList.get(i);
-            if (x == word.getPosX() && y == word.getPosY()) {
-                return true;
+            result = word != null && (wordStr.charAt(0) == word.getWord().charAt(0));
+            wordsList.release(i);
+
+            if (result){
+                break;
             }
         }
-        return false;
+        return result;
+    }
+
+    private static boolean checkOccupiedSpot(int index, WordList wordsList)
+    {
+        boolean isOccupied = wordsList.isOccupied(index);
+
+        if (!isOccupied){
+            wordsList.get(index);
+        }
+        return isOccupied;
     }
 }

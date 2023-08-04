@@ -1,6 +1,7 @@
 package com.wordhunter.client.logic;
 
 import com.wordhunter.client.ui.SceneController;
+import com.wordhunter.client.ui.WinnerPageController;
 import com.wordhunter.client.ui.WordHunterController;
 import com.wordhunter.conversion.PlayerConversion;
 import com.wordhunter.conversion.WordConversion;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.*;
 
 /**
@@ -88,7 +90,7 @@ class ClientListening extends Thread {
                         handleServerMessage(input);
                     }
                 }
-            } catch (IOException e) // disconnect
+            } catch (IOException e) // disconnect throws SocketException
             {
                 try {
                     if(!heartBeatSent)
@@ -100,9 +102,10 @@ class ClientListening extends Thread {
                     else
                     {
                         System.out.println("failed to read from socket. disconnecting...");
-                        disconnect();
+                        e.printStackTrace();
+
                         System.out.println("disconnected");
-                        break;
+                        System.exit(0);
                     }
                 } catch (IOException ex) {
                     System.out.println("server down");
@@ -196,11 +199,42 @@ class ClientListening extends Thread {
 
     public void endGameScreen(String input) {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
-        Player winner = PlayerConversion.toPlayer((tokenList[1]));
-        //TODO: have an end screen and put the winner here
-        System.out.println("Winner is " + winner.getName() + " with score " + winner.getScore());
+        Vector<Player> players = PlayerConversion.toPlayers(tokenList[1]);
 
+        Platform.runLater(() -> {
+            SceneController.getInstance().showWinnerPage();
+        });
+
+        //TODO: have an end screen and put the winner here
+        Player winner = findWinner(players);
+        System.out.println("Winner is " + winner.getName() + " with score " + winner.getScore());
+        Platform.runLater(() -> {
+            parent.getWinnerPageController().updateScoreList(players);
+            parent.getWinnerPageController().updateWinner(winner);
+        });
+
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Platform.runLater(() -> SceneController.getInstance().closeStage());
+        System.exit(0);
+    }
+
+    public static Player findWinner(Vector<Player> playerList) {
+        if (playerList.isEmpty()) {
+            return null; // Return null if the playerList is empty
+        }
+
+        Player winner = playerList.get(0);
+
+        for (Player player : playerList) {
+            if (player.getScore() > winner.getScore()) {
+                winner = player;
+            }
+        }
+        return winner;
     }
 
     /**
@@ -208,132 +242,126 @@ class ClientListening extends Thread {
      * @param input message from server
      */
     public void processNewWord(String input) {
-        // get lock
-        if (!getWordsListLock())
-        {
-            return;
-        }
-
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word newWord = WordConversion.toWord(tokenList[1]);
 
-        ClientMain.wordsList.add(newWord);
-
+//        ClientMain.wordsList.add(newWord);
+        ClientMain.wordsList.set(newWord.getWordID(), newWord);
         if (wordHunterController != null) {
             Platform.runLater(() -> {
                 wordHunterController.setWordPaneText(newWord);
                 wordHunterController.startAnimation(newWord);
             });
         }
-        ClientMain.clientWordsListLock.release();
     }
 
-    /**
-     * getWordsListLock()
-     * try to get clientWordsListLock
-     * @return true if success, false if fail
-     */
-    public boolean getWordsListLock()
-    {
-        try
-        {
-            ClientMain.clientWordsListLock.acquire();
-            return true;
-        }
-        catch (InterruptedException e)
-        {
-            System.out.println("unable to acquire the lock for client's wordsList");
-            return false;
-        }
-    }
 
     public void handleCompletedWord(String input) {
-        // get lock
-        if (!getWordsListLock())
-        {
+        String[] tokenList = input.split(ServerMain.messageDelimiter);
+        int removedWordId = Integer.parseInt(tokenList[1]);
+        int score = Integer.parseInt(tokenList[2]);
+        //Word removedWord = WordConversion.toWord(tokenList[1]);
+
+        Word removed = ClientMain.wordsList.get(removedWordId); // locks
+        if (removed == null) {
             return;
         }
-
-        String[] tokenList = input.split(ServerMain.messageDelimiter);
-        Word removedWord = WordConversion.toWord(tokenList[1]);
-
-        ClientMain.wordsList.remove(removedWord);
-
         Platform.runLater(() -> {
-            if (wordHunterController != null) {
-                wordHunterController.clearWordPaneText(removedWord);
-                wordHunterController.stopAnimation(removedWord);
+            if (removed.getColor().equals(ClientMain.colorId)) {
+                if (wordHunterController != null) {
+                    wordHunterController.setPlayerScore(score);
+                }
             }
         });
 
-        ClientMain.clientWordsListLock.release();
+        ClientMain.wordsList.set(removedWordId, null);
+
+        Platform.runLater(() -> {
+            if (wordHunterController != null) {
+                wordHunterController.clearWordPaneText(removedWordId);
+                wordHunterController.stopAnimation(removedWordId);
+            }
+        });
     }
 
     public void handleReserveWord(String input) {
-        // get lock
-        if (!getWordsListLock())
-        {
-            return;
-        }
-
         // get reserved word
         String[] tokenList = input.split(ServerMain.messageDelimiter);
-        Word reservedWord = WordConversion.toWord(tokenList[1]);
+        int position = Integer.parseInt(tokenList[1]);
+        String color = tokenList[2];
 
-        // if word in list
-        int index = ClientMain.wordsList.indexOf(reservedWord);
-        if(index != -1 )
-        {
-            Word word = ClientMain.wordsList.get(index);
-            word.setState(WordState.RESERVED);
-            word.setColor(reservedWord.getColor());
+        //Word reservedWord = WordConversion.toWord(tokenList[1]);
 
-            // set to player color
-            Platform.runLater(() -> {
-                if (wordHunterController != null) {
-                    wordHunterController.setWordPaneTextColor(word);
-                    wordHunterController.startAnimation(word);
-                }
-            });
-
-            // is current player
-            if (reservedWord.getColor().equals(ClientMain.colorId))
-            {
-                Platform.runLater(() -> {
-                    if (wordHunterController != null) {
-                        wordHunterController.reservedWord = word;
-                    }
-                });
-            }
+        Word reserved = ClientMain.wordsList.get(position); // locks
+        if (reserved == null) {
+            return;
         }
-        ClientMain.clientWordsListLock.release();
+        reserved.setState(WordState.RESERVED);
+        reserved.setColor(color);
+//        ClientMain.wordsList.set(position, reserved);
+
+        Platform.runLater(() -> {
+            if (wordHunterController != null) {
+                wordHunterController.setWordPaneTextColor(reserved);
+                wordHunterController.startAnimation(reserved);
+            }
+            if (reserved.getColor().equals(ClientMain.colorId)) {
+                if (wordHunterController != null) {
+                    wordHunterController.reservedWord = reserved; // TODO: look at later
+                }
+            }
+            ClientMain.wordsList.release(position);
+        });
+
+
+
+//        // if word in list
+//        int index = ClientMain.wordsList.indexOf(reservedWord);
+//        if (index != -1 )
+//        {
+//            Word word = ClientMain.wordsList.get(index);
+//            word.setState(WordState.RESERVED);
+//            word.setColor(reservedWord.getColor());
+//
+//            // set to player color
+//            Platform.runLater(() -> {
+//                if (wordHunterController != null) {
+//                    wordHunterController.setWordPaneTextColor(word);
+//                    wordHunterController.startAnimation(word);
+//                }
+//            });
+//
+//            // is current player
+//            if (reservedWord.getColor().equals(ClientMain.colorId))
+//            {
+//                Platform.runLater(() -> {
+//                    if (wordHunterController != null) {
+//                        wordHunterController.reservedWord = word;
+//                    }
+//                });
+//            }
+//        }
     }
 
     public void handleReopenWord(String input) {
-        // get lock
-        if (!getWordsListLock())
-        {
+        String[] tokenList = input.split(ServerMain.messageDelimiter);
+        int position = Integer.parseInt(tokenList[1]);
+
+        Word reopened = ClientMain.wordsList.get(position);
+        if (reopened == null) {
+            ClientMain.wordsList.release(position);
             return;
         }
+        reopened.setState(WordState.OPEN);
+        reopened.setColor(ServerMain.defaultColor);
 
-        String[] tokenList = input.split(ServerMain.messageDelimiter);
-        Word reopenWord = WordConversion.toWord(tokenList[1]);
-
-        int index = ClientMain.wordsList.indexOf(reopenWord);
-        if(index != -1 )
-        {
-            Word word = ClientMain.wordsList.get(index);
-            word.setState(WordState.OPEN);
-            word.setColor(reopenWord.getColor());
-
-            Platform.runLater(() -> {
-                if (wordHunterController != null) {
-                    wordHunterController.clearWordPaneColor(word);
-                    wordHunterController.startAnimation(word);
-                }
-            });
-        }
-        ClientMain.clientWordsListLock.release();
+        Platform.runLater(() -> {
+            if (wordHunterController != null) {
+                wordHunterController.clearWordPaneColor(reopened);
+                wordHunterController.startAnimation(reopened);
+            }
+            ClientMain.wordsList.release(position);
+        });
     }
 
     public void updateStartTimer(String input) {
@@ -342,8 +370,6 @@ class ClientListening extends Thread {
         Platform.runLater(() -> {
             parent.getServerPageController().updateStartTimer(duration);
         });
-        //ClientMain.getInstance().setStartTimer(duration);
-        //System.out.println("Game starts in " + duration + " seconds.");
     }
 
 }

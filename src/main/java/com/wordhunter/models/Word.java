@@ -10,24 +10,23 @@ public class Word implements Serializable {
     private String word;
     private WordState state;
     private String color;
-    private int posX;
-    private int posY;
-    // TODO: add timer for each word, relevant to health bar
+    //private int posX;
+    //private int posY;
+    private int wordID;
     private long expiredTime;
 
-    public Word(String word, int x, int y) {
+    public Word(String word, int wordID) {
         this.word = word;
         this.state = WordState.OPEN;
         this.color = "#000000";
-        this.posX = x;
-        this.posY = y;
+        this.wordID = wordID;
         this.expiredTime = System.currentTimeMillis() + generateTimeToLive();
     }
 
     public long generateTimeToLive() {
         Random random = new Random();
-        int lowerBound = 10000;
-        int upperBound = 15000;
+        int lowerBound = 8000;
+        int upperBound = 16000;
         return random.nextInt((upperBound - lowerBound) + 1) + lowerBound;
     }
 
@@ -56,12 +55,12 @@ public class Word implements Serializable {
         this.color = color;
     }
 
-    public int getPosX() {
-        return posX;
+    public int getWordID() {
+        return wordID;
     }
 
-    public int getPosY() {
-        return posY;
+    public void setWordID(int wordID) {
+        this.wordID = wordID;
     }
 
     @Override
@@ -70,8 +69,7 @@ public class Word implements Serializable {
                 "word='" + word + '\'' +
                 ", state='" + state + '\'' +
                 ", color=" + color +
-                ", posX=" + posX +
-                ", posY=" + posY +
+                ", wordID=" + wordID +
                 '}';
     }
 
