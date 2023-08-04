@@ -14,7 +14,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.*;
 
 /**
  * PlayerThread
@@ -31,17 +30,6 @@ class PlayerThread extends Thread {
     private final ServerAcceptClients parent;
 
     private final Map<String, ServerMessageMethod> messageToCallback = new HashMap<>();
-
-    // keep alive
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private ScheduledFuture<?> heartBeatHandle;
-    private final Runnable disconnectRunnable = () -> {
-        try {
-            disconnect();
-        } catch (IOException ignored) {
-        }
-    };
-
 
     /**
      * PlayerThread()
@@ -62,11 +50,6 @@ class PlayerThread extends Thread {
         messageToCallback.put("removeWord", PlayerThread::handleCompletedWord);
         messageToCallback.put("reserveWord", PlayerThread::handleReserveWord);
         messageToCallback.put("reopenWord", PlayerThread::handleReopenWord);
-
-        heartBeatHandle = scheduler.scheduleAtFixedRate(disconnectRunnable,
-                2 * ServerMain.heartBeatInterval,
-                2 * ServerMain.heartBeatInterval,
-                TimeUnit.SECONDS);
     }
 
     /**
@@ -77,7 +60,7 @@ class PlayerThread extends Thread {
         // set up input stream
         InputStream is;
         try {
-            sock.setSoTimeout(2 * ServerMain.heartBeatInterval);
+            sock.setSoTimeout(3 * ServerMain.heartBeatInterval);
             is = sock.getInputStream();
         } catch (IOException e) {
             System.out.println("failed to get input stream");
@@ -89,13 +72,6 @@ class PlayerThread extends Thread {
         while (true) {
             try {
                 String input = in.readLine();
-
-                // reset disconnect timer
-                heartBeatHandle.cancel(true);
-                heartBeatHandle = scheduler.scheduleAtFixedRate(disconnectRunnable,
-                        2 * ServerMain.heartBeatInterval,
-                        2 * ServerMain.heartBeatInterval,
-                        TimeUnit.SECONDS);
 
                 if (input != null) {
                     if (!Objects.equals("", input))
@@ -146,6 +122,7 @@ class PlayerThread extends Thread {
      * @param input message from client
      */
     public void handleHeartBeat(String input) {
+        System.out.println("client " + index + " heartbeat"); // TODO: REMOVE
         ServerMain.sendMessageToClient(sock, "");
     }
 

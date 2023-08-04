@@ -26,12 +26,12 @@ class ClientListening extends Thread {
     public Socket sock;
     public ClientMain parent;
 
-    public Timer heartBeatTimer;    // send heartbeat every x seconds
     boolean gotColorId = false;     // used to get colorId from first connection message
 
     private final Map<String, MessageMethod> messageToCallback = new HashMap<>();
 
     private WordHunterController wordHunterController;
+    private boolean heartBeatSent = false;
 
     /**
      * ClientListening()
@@ -47,7 +47,6 @@ class ClientListening extends Thread {
         messageToCallback.put("newPlayerJoin", ClientListening::newPlayerJoin);
         messageToCallback.put("playerDisconnect", ClientListening::playerDisconnect);
         messageToCallback.put("error", ClientListening::error);
-        messageToCallback.put("", ClientListening::heartBeatAck);
 
         messageToCallback.put("startTimer", ClientListening::updateStartTimer);
         messageToCallback.put("gameStart", ClientListening::displayGameScreen);
@@ -69,7 +68,7 @@ class ClientListening extends Thread {
         // set up input stream
         InputStream is;
         try {
-            sock.setSoTimeout(2 * ServerMain.heartBeatInterval);
+            sock.setSoTimeout(ServerMain.heartBeatInterval/2);
             is = sock.getInputStream();
         } catch (IOException e) {
             System.out.println("failed to get input stream");
@@ -81,22 +80,34 @@ class ClientListening extends Thread {
         while (true) {
             try {
                 String input = in.readLine();
-                if (input != null) {
-                    if (!Objects.equals("", input))
+                if (input != null)
+                {
+                    heartBeatSent = false;
+                    if (!Objects.equals("", input)) {
                         System.out.println("server says: " + input);
-                    handleServerMessage(input);
+                        handleServerMessage(input);
+                    }
                 }
             } catch (IOException e) // disconnect
             {
-                System.out.println("failed to read from socket. disconnecting...");
                 try {
-                    disconnect();
-                    System.out.println("disconnected");
+                    if(!heartBeatSent)
+                    {
+                        System.out.println("sending heartbeat"); // TODO: REMOVE
+                        heartBeatSent = true;
+                        ClientMain.sendMsgToServer("");
+                    }
+                    else
+                    {
+                        System.out.println("failed to read from socket. disconnecting...");
+                        disconnect();
+                        System.out.println("disconnected");
+                        break;
+                    }
                 } catch (IOException ex) {
                     System.out.println("server down");
                     System.exit(0);
                 }
-                break;
             }
         }
     }
@@ -123,9 +134,6 @@ class ClientListening extends Thread {
     public void handleServerMessage(String msg) {
         if (!gotColorId) {
             gotColorId = true;
-            // setup keep alive
-            heartBeatTimer = new Timer();
-            heartBeatTimer.schedule(new HeartBeat(), ServerMain.heartBeatInterval);
         }
 
         // call function mapped to message
@@ -180,10 +188,6 @@ class ClientListening extends Thread {
             System.out.println("failed to close socket");
         }
         System.exit(0);
-    }
-
-    public void heartBeatAck(String input) {
-        heartBeatTimer.schedule(new HeartBeat(), ServerMain.heartBeatInterval);
     }
 
     public void displayGameScreen(String input) {

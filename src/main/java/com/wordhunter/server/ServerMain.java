@@ -74,7 +74,7 @@ public class ServerMain extends Thread
     public final static int clientLimit = 6; // update ServerAcceptClients.colorIds if you change
     public final static int startGameTimeMin = 1; // change later
     public final static int gameMaxTimeMin = 1; // change later
-    public final static int heartBeatInterval = 1000;
+    public final static int heartBeatInterval = 5000; // in milliseconds
 
 
     // server exclusive variables
