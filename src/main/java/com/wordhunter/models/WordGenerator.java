@@ -49,30 +49,31 @@ public class WordGenerator {
 
         // Broadcast new word to all clients
         Word word = new Word(newWord, wordID);
-//        System.out.println("GENERATING NEW WORD " + word.getWord());
+        ServerMain.wordsList.release(wordID);
         return word;
     }
 
-    private static boolean checkDuplicateChar(String word, Vector<Word> wordsList)
+    private static boolean checkDuplicateChar(String wordStr, WordList wordsList)
     {
-        for (int i = 0; i < wordsList.size(); i++) {
-            if (wordsList.get(i) != null) {
-                if (word.charAt(0) == wordsList.get(i).getWord().charAt(0)) {
-                    return true;
-                }
+        boolean result = false;
+        for (int i = 0; i < wordsList.getSize(); i++) {
+            Word word = wordsList.get(i);
+            result = word != null && (wordStr.charAt(0) == word.getWord().charAt(0));
+            wordsList.release(i);
+
+            if (result){
+                break;
             }
         }
-        return false;
+        return result;
     }
-    private static boolean checkOccupiedSpot(int id, Vector<Word> wordsList)
+    private static boolean checkOccupiedSpot(int index, WordList wordsList)
     {
-//        for (int i = 0; i < wordsList.size(); i++) {
-//            Word word = wordsList.get(i);
-//            if (x == word.getWordID()) {
-//                return true;
-//            }
-//        }
-//        return false;
-        return (wordsList.get(id) != null);
+        boolean isOccupied = wordsList.isOccupied(index);
+
+        if (!isOccupied){
+            wordsList.get(index);
+        }
+        return isOccupied;
     }
 }
