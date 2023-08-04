@@ -168,7 +168,8 @@ class PlayerThread extends Thread {
 
         // Remove once word is done
         String removeWordMsg = "removeWord" + ServerMain.messageDelimiter
-                                + target.getWordID();
+                                + target.getWordID() + ServerMain.messageDelimiter
+                                + this.player.getScore();
         ServerMain.broadcast(removeWordMsg);
 
         // Add new word

@@ -1,6 +1,7 @@
 package com.wordhunter.client.logic;
 
 import com.wordhunter.client.ui.SceneController;
+import com.wordhunter.client.ui.WinnerPageController;
 import com.wordhunter.client.ui.WordHunterController;
 import com.wordhunter.conversion.PlayerConversion;
 import com.wordhunter.conversion.WordConversion;
@@ -194,11 +195,42 @@ class ClientListening extends Thread {
 
     public void endGameScreen(String input) {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
-        Player winner = PlayerConversion.toPlayer((tokenList[1]));
-        //TODO: have an end screen and put the winner here
-        System.out.println("Winner is " + winner.getName() + " with score " + winner.getScore());
+        Vector<Player> players = PlayerConversion.toPlayers(tokenList[1]);
 
+        Platform.runLater(() -> {
+            SceneController.getInstance().showWinnerPage();
+        });
+
+        //TODO: have an end screen and put the winner here
+        Player winner = findWinner(players);
+        System.out.println("Winner is " + winner.getName() + " with score " + winner.getScore());
+        Platform.runLater(() -> {
+            parent.getWinnerPageController().updateScoreList(players);
+            parent.getWinnerPageController().updateWinner(winner);
+        });
+
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Platform.runLater(() -> SceneController.getInstance().closeStage());
+        System.exit(0);
+    }
+
+    public static Player findWinner(Vector<Player> playerList) {
+        if (playerList.isEmpty()) {
+            return null; // Return null if the playerList is empty
+        }
+
+        Player winner = playerList.get(0);
+
+        for (Player player : playerList) {
+            if (player.getScore() > winner.getScore()) {
+                winner = player;
+            }
+        }
+        return winner;
     }
 
     /**
@@ -223,9 +255,21 @@ class ClientListening extends Thread {
     public void handleCompletedWord(String input) {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int removedWordId = Integer.parseInt(tokenList[1]);
+        int score = Integer.parseInt(tokenList[2]);
         //Word removedWord = WordConversion.toWord(tokenList[1]);
 
-//        ClientMain.wordsList.remove(removedWord);
+        Word removed = ClientMain.wordsList.get(removedWordId); // locks
+        if (removed == null) {
+            return;
+        }
+        Platform.runLater(() -> {
+            if (removed.getColor().equals(ClientMain.colorId)) {
+                if (wordHunterController != null) {
+                    wordHunterController.setPlayerScore(score);
+                }
+            }
+        });
+
         ClientMain.wordsList.set(removedWordId, null);
 
         Platform.runLater(() -> {

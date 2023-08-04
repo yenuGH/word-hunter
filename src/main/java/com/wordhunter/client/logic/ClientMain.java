@@ -11,6 +11,7 @@ package com.wordhunter.client.logic;
  */
 
 import com.wordhunter.client.ui.ServerPageController;
+import com.wordhunter.client.ui.WinnerPageController;
 import com.wordhunter.models.Word;
 import com.wordhunter.models.Player;
 import com.wordhunter.models.WordList;
@@ -64,6 +65,7 @@ public class ClientMain
     public static int reconnectAttempts = 0;
 
     public ServerPageController serverPageController;
+    public WinnerPageController winnerPageController;
 
     public String serverIP;
     public static Socket sock;              // socket connected to server
@@ -187,5 +189,13 @@ public class ClientMain
 
     public ServerPageController getServerPageController(){
         return this.serverPageController;
+    }
+
+    public WinnerPageController getWinnerPageController() {
+        return winnerPageController;
+    }
+
+    public void setWinnerPageController(WinnerPageController winnerPageController) {
+        this.winnerPageController = winnerPageController;
     }
 }

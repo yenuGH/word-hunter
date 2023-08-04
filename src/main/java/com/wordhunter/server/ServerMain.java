@@ -45,7 +45,7 @@ class WordTimerTask extends TimerTask {
         // Remove once the TTL of the word is done
         //ServerMain.wordsList.remove(currentWord);
         ServerMain.wordsList.set(currentWord.getWordID(), null);
-        ServerMain.broadcast("removeWord" + ServerMain.messageDelimiter + currentWord.getWordID());
+        ServerMain.broadcast("removeWord" + ServerMain.messageDelimiter + currentWord.getWordID() + ServerMain.messageDelimiter + 0);
 
         Word newWord = WordGenerator.generateNewWord();
         //ServerMain.wordsList.add(newWord);
@@ -149,26 +149,9 @@ public class ServerMain extends Thread
             System.out.println("server timer interrupted");
         }
 
-        Player winner = findWinner();
-        // TODO: add scores to message
-        broadcast("gameOver" + ServerMain.messageDelimiter + PlayerConversion.fromPlayer(winner));
+        broadcast("gameOver" + ServerMain.messageDelimiter + PlayerConversion.fromPlayers(ServerMain.playerList));
         // TODO: clean up sockets (from client side? add option to start new game?)
-        System.exit(0);
-    }
-
-    public static Player findWinner() {
-        if (playerList.isEmpty()) {
-            return null; // Return null if the playerList is empty
-        }
-
-        Player winner = playerList.get(0);
-
-        for (Player player : playerList) {
-            if (player.getScore() > winner.getScore()) {
-                winner = player;
-            }
-        }
-        return winner;
+        //System.exit(0);
     }
 
     /**

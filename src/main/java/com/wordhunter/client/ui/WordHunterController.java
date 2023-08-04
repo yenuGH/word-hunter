@@ -27,7 +27,7 @@ public class WordHunterController {
     private GridPane grids;
 
     @FXML
-    private Label healthBar;
+    private Label playerScore;
 
     @FXML
     private TextField userInputField;
@@ -92,8 +92,11 @@ public class WordHunterController {
 
     /**
      *
-     * @param word
      */
+    public void setPlayerScore(int score) {
+        playerScore.setText(Integer.toString(score));
+    }
+
     public void startAnimation(Word word) {
         int[] dimensions = positionToDimensions(word.getWordID());
         wordPanes[dimensions[0]][dimensions[1]].initAnimation(word.getTimeToLiveRemaining());
