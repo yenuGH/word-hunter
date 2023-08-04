@@ -149,28 +149,8 @@ class PlayerThread extends Thread {
         ServerMain.sendMessageToClient(sock, "");
     }
 
-    public boolean getWordsListLock()
-    {
-        try
-        {
-            ServerMain.wordsListLock.acquire();
-            return true;
-        }
-        catch (InterruptedException e)
-        {
-            System.out.println("unable to lock the words list access");
-            return false;
-        }
-    }
-
     public void handleCompletedWord(String input)
     {
-        // get lock
-        if(!getWordsListLock())
-        {
-            return;
-        }
-
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int position = Integer.parseInt(tokenList[1]);
         //Word target = WordConversion.toWord(tokenList[1]);
@@ -184,7 +164,7 @@ class PlayerThread extends Thread {
 
 //        ServerMain.wordsList.remove(target);
         ServerMain.wordsList.set(target.getWordID(), null);
-        System.out.println("Size of wordlist " + ServerMain.wordsList.size());
+        System.out.println("Size of wordlist " + ServerMain.wordsList.getSize());
 
         // Remove once word is done
         String removeWordMsg = "removeWord" + ServerMain.messageDelimiter
@@ -196,17 +176,9 @@ class PlayerThread extends Thread {
         //ServerMain.wordsList.add(newWord);
         ServerMain.wordsList.set(newWord.getWordID(), newWord);
         ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
-
-        ServerMain.wordsListLock.release();
     }
 
     public void handleReserveWord(String input) {
-        // get lock
-        if(!getWordsListLock())
-        {
-            return;
-        }
-
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         //Word target = WordConversion.toWord(tokenList[1]);
         int position = Integer.parseInt(tokenList[1]);
@@ -234,16 +206,9 @@ class PlayerThread extends Thread {
 //                break;
 //            }
 //        }
-        ServerMain.wordsListLock.release();
     }
 
     public void handleReopenWord(String input) {
-        // get lock
-        if(!getWordsListLock())
-        {
-            return;
-        }
-
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int position = Integer.parseInt(tokenList[1]);
         //Word target = WordConversion.toWord(tokenList[1]);
@@ -266,6 +231,5 @@ class PlayerThread extends Thread {
 //                break;
 //            }
 //        }
-        ServerMain.wordsListLock.release();
     }
 }

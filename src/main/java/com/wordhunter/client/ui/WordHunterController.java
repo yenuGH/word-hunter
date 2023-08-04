@@ -2,6 +2,7 @@ package com.wordhunter.client.ui;
 import com.wordhunter.client.logic.ClientMain;
 import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Word;
+import com.wordhunter.models.WordList;
 import com.wordhunter.models.WordState;
 import com.wordhunter.server.ServerMain;
 import javafx.animation.Transition;
@@ -33,12 +34,18 @@ public class WordHunterController {
 
     // client connection and game variables
     public ClientMain clientMain;
-    private Vector<Word> wordsList = new Vector<>();
+    private WordList wordsList;
     private WordPane[][] wordPanes = new WordPane[ServerMain.dimension][ServerMain.dimension];
     public Word reservedWord;
 
 
     private static WordHunterController wordHunterController;
+
+    public WordHunterController()
+    {
+        wordsList = new WordList(25);
+    }
+
     public static WordHunterController getInstance() {
         if (wordHunterController == null) {
             wordHunterController = new WordHunterController();
@@ -50,7 +57,7 @@ public class WordHunterController {
     public void initialize() {
         clientMain = ClientMain.getInstance();
         wordsList = clientMain.wordsList;
-        System.out.println("Size of wordlist " + clientMain.wordsList.size());
+        System.out.println("Size of wordlist " + clientMain.wordsList.getSize());
         // Make a border
         grids.setStyle(WordPane.BORDER);
         //System.out.println(grids);
@@ -64,11 +71,13 @@ public class WordHunterController {
             }
         }
 
-        for (Word word : wordsList) {
+        for (int i=0; i< wordsList.getSize(); i++) {
+            Word word = wordsList.get(i);
             if (word != null) {
                 setWordPaneText(word);
                 startAnimation(word);
             }
+            wordsList.release(i);
         }
 
         handleKeyTypedEvent();
@@ -158,14 +167,17 @@ public class WordHunterController {
                     return;
                 }
 
-                Word targetWord = findTarget(newInput);
+                Word targetWord = findTarget(newInput); // locks
                 if (newInput.length() == 1) {
-                    if (targetWord == null) {
+                    if (targetWord == null)
+                    {
                         // Case 1: word is not found
                         // TODO: add a warning message on the screen
                         System.out.println("Warning: word is not found, or it it reserved");
                         clearUserInput();
-                    } else {
+                        return;
+                    } else
+                    {
                         // Case 2: word is found, reserve the word
                         String requestedWordStr = WordConversion.fromWord(targetWord);
                         Word requestedWord = WordConversion.toWord(requestedWordStr);
@@ -177,7 +189,6 @@ public class WordHunterController {
                             // if the word is already colored and thus reserved
                             clearUserInput();
                         }
-
                     }
 
                 } else {
@@ -185,49 +196,29 @@ public class WordHunterController {
                         // Case 3: player mistypes the word, reopen it again
                         requestWordStateChanged(reservedWord, "reopenWord");
                         clearUserInput();
+                        return;
                     } else if (targetWord.getWord().equals(newInput)) {
                         // Case 4: word is completed
                         requestWordStateChanged(targetWord, "removeWord");
                         clearUserInput();
                     }
                 }
+                ClientMain.wordsList.release(targetWord.getWordID());
             }
 
-            private Word findTarget(String userInput) {
-                for (Word word : wordsList){
-                    if (word != null) {
-                        if (word.getWord().startsWith(userInput)){
-                            return word;
+            private Word findTarget(String userInput)
+            {
+                for (int i=0; i< wordsList.getSize(); i++)
+                {
+                    Word word = wordsList.get(i);
+                    if (word != null && word.getWord().startsWith(userInput))
+                    {
+                        return word;
                         }
+                        wordsList.release(i);
                     }
-                }
                 return null;
             }
         });
-    }
-
-    /**
-     * Check if every character typed matches the current word that is reserved by the player.
-     * @param ch character entered by the player
-     * @return index of word
-     */
-    private int findMatchingWord(char ch, int currentWordIdx, int charIdx) {
-        if (charIdx > 0) {
-            // Check the reserved word only
-            if (ch == wordsList.elementAt(currentWordIdx).getWord().charAt(charIdx))
-                return currentWordIdx;
-        } else {
-            // No word is currently reserved by the player, then check if any word has character match.
-            for (int i = 0; i < wordsList.size(); i++) {
-                Word word = wordsList.elementAt(i);
-                if (ch == word.getWord().charAt(0) && word.getState() == WordState.OPEN)
-                    return i;
-            }
-        }
-        return -1;
-    }
-
-    public void setHealthBar(int health){
-        this.healthBar.setText("" + health);
     }
 }

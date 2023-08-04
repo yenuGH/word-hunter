@@ -43,6 +43,10 @@ public class WordList {
 
     public Word get(int index){
         lock(index);
+        if(this.wordList[index] == null)
+        {
+            release(index);
+        }
         return this.wordList[index];
     }
 

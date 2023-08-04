@@ -67,6 +67,7 @@ public class WordGenerator {
         }
         return result;
     }
+
     private static boolean checkOccupiedSpot(int index, WordList wordsList)
     {
         boolean isOccupied = wordsList.isOccupied(index);

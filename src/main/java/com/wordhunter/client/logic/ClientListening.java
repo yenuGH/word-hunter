@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.*;
 
 /**
@@ -86,7 +87,7 @@ class ClientListening extends Thread {
                         System.out.println("server says: " + input);
                     handleServerMessage(input);
                 }
-            } catch (IOException e) // disconnect
+            } catch (IOException e) // disconnect throws SocketException
             {
                 System.out.println("failed to read from socket. disconnecting...");
                 try {
@@ -205,12 +206,6 @@ class ClientListening extends Thread {
      * @param input message from server
      */
     public void processNewWord(String input) {
-        // get lock
-        if (!getWordsListLock())
-        {
-            return;
-        }
-
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word newWord = WordConversion.toWord(tokenList[1]);
 
@@ -222,35 +217,10 @@ class ClientListening extends Thread {
                 wordHunterController.startAnimation(newWord);
             });
         }
-        ClientMain.clientWordsListLock.release();
     }
 
-    /**
-     * getWordsListLock()
-     * try to get clientWordsListLock
-     * @return true if success, false if fail
-     */
-    public boolean getWordsListLock()
-    {
-        try
-        {
-            ClientMain.clientWordsListLock.acquire();
-            return true;
-        }
-        catch (InterruptedException e)
-        {
-            System.out.println("unable to acquire the lock for client's wordsList");
-            return false;
-        }
-    }
 
     public void handleCompletedWord(String input) {
-        // get lock
-        if (!getWordsListLock())
-        {
-            return;
-        }
-
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int removedWordId = Integer.parseInt(tokenList[1]);
         //Word removedWord = WordConversion.toWord(tokenList[1]);
@@ -264,17 +234,9 @@ class ClientListening extends Thread {
                 wordHunterController.stopAnimation(removedWordId);
             }
         });
-
-        ClientMain.clientWordsListLock.release();
     }
 
     public void handleReserveWord(String input) {
-        // get lock
-        if (!getWordsListLock())
-        {
-            return;
-        }
-
         // get reserved word
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int position = Integer.parseInt(tokenList[1]);
@@ -282,29 +244,28 @@ class ClientListening extends Thread {
 
         //Word reservedWord = WordConversion.toWord(tokenList[1]);
 
-        Word reserved = ClientMain.wordsList.get(position);
+        Word reserved = ClientMain.wordsList.get(position); // locks
         if (reserved == null) {
             return;
         }
         reserved.setState(WordState.RESERVED);
         reserved.setColor(color);
-        ClientMain.wordsList.set(position, reserved);
+//        ClientMain.wordsList.set(position, reserved);
 
         Platform.runLater(() -> {
             if (wordHunterController != null) {
                 wordHunterController.setWordPaneTextColor(reserved);
                 wordHunterController.startAnimation(reserved);
             }
+            if (reserved.getColor().equals(ClientMain.colorId)) {
+                if (wordHunterController != null) {
+                    wordHunterController.reservedWord = reserved; // TODO: look at later
+                }
+            }
+            ClientMain.wordsList.release(position);
         });
 
-        if (reserved.getColor().equals(ClientMain.colorId))
-        {
-            Platform.runLater(() -> {
-                if (wordHunterController != null) {
-                    wordHunterController.reservedWord = reserved;
-                }
-            });
-        }
+
 
 //        // if word in list
 //        int index = ClientMain.wordsList.indexOf(reservedWord);
@@ -332,21 +293,15 @@ class ClientListening extends Thread {
 //                });
 //            }
 //        }
-        ClientMain.clientWordsListLock.release();
     }
 
     public void handleReopenWord(String input) {
-        // get lock
-        if (!getWordsListLock())
-        {
-            return;
-        }
-
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int position = Integer.parseInt(tokenList[1]);
 
         Word reopened = ClientMain.wordsList.get(position);
         if (reopened == null) {
+            ClientMain.wordsList.release(position);
             return;
         }
         reopened.setState(WordState.OPEN);
@@ -357,25 +312,8 @@ class ClientListening extends Thread {
                 wordHunterController.clearWordPaneColor(reopened);
                 wordHunterController.startAnimation(reopened);
             }
+            ClientMain.wordsList.release(position);
         });
-
-        //Word reopenWord = WordConversion.toWord(tokenList[1]);
-
-//        int index = ClientMain.wordsList.indexOf(reopenWord);
-//        if(index != -1 )
-//        {
-//            Word word = ClientMain.wordsList.get(index);
-//            word.setState(WordState.OPEN);
-//            word.setColor(reopenWord.getColor());
-//
-//            Platform.runLater(() -> {
-//                if (wordHunterController != null) {
-//                    wordHunterController.clearWordPaneColor(word);
-//                    wordHunterController.startAnimation(word);
-//                }
-//            });
-//        }
-        ClientMain.clientWordsListLock.release();
     }
 
     public void updateStartTimer(String input) {
@@ -384,8 +322,6 @@ class ClientListening extends Thread {
         Platform.runLater(() -> {
             parent.getServerPageController().updateStartTimer(duration);
         });
-        //ClientMain.getInstance().setStartTimer(duration);
-        //System.out.println("Game starts in " + duration + " seconds.");
     }
 
 }

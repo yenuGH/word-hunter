@@ -13,6 +13,7 @@ package com.wordhunter.client.logic;
 import com.wordhunter.client.ui.ServerPageController;
 import com.wordhunter.models.Word;
 import com.wordhunter.models.Player;
+import com.wordhunter.models.WordList;
 import com.wordhunter.server.ServerMain;
 import com.wordhunter.server.ServerState;
 
@@ -70,10 +71,9 @@ public class ClientMain
     // game variables
     public String username;
     public static String colorId = "";       // leave this empty
-    public static final Vector<Word> wordsList = new Vector<>();
+    public static WordList wordsList;
     public Vector<Player> players;
 
-    public static final Semaphore clientWordsListLock = new Semaphore(1);
 
     // Singleton
     public static ClientMain getInstance() {
@@ -92,9 +92,10 @@ public class ClientMain
      * entry point -> choose start server or join as client
      */
     public ClientMain() throws IOException, InterruptedException {
-        for (int i = 0; i < 25; i++) {
-            wordsList.add(null);
-        }
+//        for (int i = 0; i < 25; i++) {
+//            wordsList.add(null);
+//        }
+        wordsList = new WordList(25);
     }
 
     public void setAddress(String address) {
