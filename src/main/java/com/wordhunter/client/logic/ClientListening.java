@@ -90,6 +90,7 @@ class ClientListening extends Thread {
             {
                 System.out.println("failed to read from socket. disconnecting...");
                 try {
+                    e.printStackTrace();
                     disconnect();
                     System.out.println("disconnected");
                 } catch (IOException ex) {
@@ -213,8 +214,8 @@ class ClientListening extends Thread {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word newWord = WordConversion.toWord(tokenList[1]);
 
-        ClientMain.wordsList.add(newWord);
-
+//        ClientMain.wordsList.add(newWord);
+        ClientMain.wordsList.set(newWord.getWordID(), newWord);
         if (wordHunterController != null) {
             Platform.runLater(() -> {
                 wordHunterController.setWordPaneText(newWord);
@@ -251,14 +252,16 @@ class ClientListening extends Thread {
         }
 
         String[] tokenList = input.split(ServerMain.messageDelimiter);
-        Word removedWord = WordConversion.toWord(tokenList[1]);
+        int removedWordId = Integer.parseInt(tokenList[1]);
+        //Word removedWord = WordConversion.toWord(tokenList[1]);
 
-        ClientMain.wordsList.remove(removedWord);
+//        ClientMain.wordsList.remove(removedWord);
+        ClientMain.wordsList.set(removedWordId, null);
 
         Platform.runLater(() -> {
             if (wordHunterController != null) {
-                wordHunterController.clearWordPaneText(removedWord);
-                wordHunterController.stopAnimation(removedWord);
+                wordHunterController.clearWordPaneText(removedWordId);
+                wordHunterController.stopAnimation(removedWordId);
             }
         });
 
@@ -274,34 +277,61 @@ class ClientListening extends Thread {
 
         // get reserved word
         String[] tokenList = input.split(ServerMain.messageDelimiter);
-        Word reservedWord = WordConversion.toWord(tokenList[1]);
+        int position = Integer.parseInt(tokenList[1]);
+        String color = tokenList[2];
 
-        // if word in list
-        int index = ClientMain.wordsList.indexOf(reservedWord);
-        if(index != -1 )
+        //Word reservedWord = WordConversion.toWord(tokenList[1]);
+
+        Word reserved = ClientMain.wordsList.get(position);
+        if (reserved == null) {
+            return;
+        }
+        reserved.setState(WordState.RESERVED);
+        reserved.setColor(color);
+        ClientMain.wordsList.set(position, reserved);
+
+        Platform.runLater(() -> {
+            if (wordHunterController != null) {
+                wordHunterController.setWordPaneTextColor(reserved);
+                wordHunterController.startAnimation(reserved);
+            }
+        });
+
+        if (reserved.getColor().equals(ClientMain.colorId))
         {
-            Word word = ClientMain.wordsList.get(index);
-            word.setState(WordState.RESERVED);
-            word.setColor(reservedWord.getColor());
-
-            // set to player color
             Platform.runLater(() -> {
                 if (wordHunterController != null) {
-                    wordHunterController.setWordPaneTextColor(word);
-                    wordHunterController.startAnimation(word);
+                    wordHunterController.reservedWord = reserved;
                 }
             });
-
-            // is current player
-            if (reservedWord.getColor().equals(ClientMain.colorId))
-            {
-                Platform.runLater(() -> {
-                    if (wordHunterController != null) {
-                        wordHunterController.reservedWord = word;
-                    }
-                });
-            }
         }
+
+//        // if word in list
+//        int index = ClientMain.wordsList.indexOf(reservedWord);
+//        if (index != -1 )
+//        {
+//            Word word = ClientMain.wordsList.get(index);
+//            word.setState(WordState.RESERVED);
+//            word.setColor(reservedWord.getColor());
+//
+//            // set to player color
+//            Platform.runLater(() -> {
+//                if (wordHunterController != null) {
+//                    wordHunterController.setWordPaneTextColor(word);
+//                    wordHunterController.startAnimation(word);
+//                }
+//            });
+//
+//            // is current player
+//            if (reservedWord.getColor().equals(ClientMain.colorId))
+//            {
+//                Platform.runLater(() -> {
+//                    if (wordHunterController != null) {
+//                        wordHunterController.reservedWord = word;
+//                    }
+//                });
+//            }
+//        }
         ClientMain.clientWordsListLock.release();
     }
 
@@ -313,22 +343,38 @@ class ClientListening extends Thread {
         }
 
         String[] tokenList = input.split(ServerMain.messageDelimiter);
-        Word reopenWord = WordConversion.toWord(tokenList[1]);
+        int position = Integer.parseInt(tokenList[1]);
 
-        int index = ClientMain.wordsList.indexOf(reopenWord);
-        if(index != -1 )
-        {
-            Word word = ClientMain.wordsList.get(index);
-            word.setState(WordState.OPEN);
-            word.setColor(reopenWord.getColor());
-
-            Platform.runLater(() -> {
-                if (wordHunterController != null) {
-                    wordHunterController.clearWordPaneColor(word);
-                    wordHunterController.startAnimation(word);
-                }
-            });
+        Word reopened = ClientMain.wordsList.get(position);
+        if (reopened == null) {
+            return;
         }
+        reopened.setState(WordState.OPEN);
+        reopened.setColor(ServerMain.defaultColor);
+
+        Platform.runLater(() -> {
+            if (wordHunterController != null) {
+                wordHunterController.clearWordPaneColor(reopened);
+                wordHunterController.startAnimation(reopened);
+            }
+        });
+
+        //Word reopenWord = WordConversion.toWord(tokenList[1]);
+
+//        int index = ClientMain.wordsList.indexOf(reopenWord);
+//        if(index != -1 )
+//        {
+//            Word word = ClientMain.wordsList.get(index);
+//            word.setState(WordState.OPEN);
+//            word.setColor(reopenWord.getColor());
+//
+//            Platform.runLater(() -> {
+//                if (wordHunterController != null) {
+//                    wordHunterController.clearWordPaneColor(word);
+//                    wordHunterController.startAnimation(word);
+//                }
+//            });
+//        }
         ClientMain.clientWordsListLock.release();
     }
 

@@ -10,7 +10,7 @@ import java.util.Vector;
 
 public class WordGenerator {
 
-    public final static int dimension = 5;
+    public final static int dimension = 25;
     public static final Vector<String> dictionary = new Vector<>();
 
     /**
@@ -42,35 +42,37 @@ public class WordGenerator {
             newWord = dictionary.get(rand.nextInt(dictionary.size()));
         }
 
-        int x = rand.nextInt(dimension);
-        int y = rand.nextInt(dimension);
-        while (checkOccupiedSpot(x, y, ServerMain.wordsList)) {
-            x = rand.nextInt(dimension);
-            y = rand.nextInt(dimension);
+        int wordID = rand.nextInt(dimension);
+        while (checkOccupiedSpot(wordID, ServerMain.wordsList)) {
+            wordID = rand.nextInt(dimension);
         }
 
         // Broadcast new word to all clients
-        Word word = new Word(newWord, x, y);
+        Word word = new Word(newWord, wordID);
+//        System.out.println("GENERATING NEW WORD " + word.getWord());
         return word;
     }
 
     private static boolean checkDuplicateChar(String word, Vector<Word> wordsList)
     {
         for (int i = 0; i < wordsList.size(); i++) {
-            if (word.charAt(0) == wordsList.get(i).getWord().charAt(0)) {
-                return true;
+            if (wordsList.get(i) != null) {
+                if (word.charAt(0) == wordsList.get(i).getWord().charAt(0)) {
+                    return true;
+                }
             }
         }
         return false;
     }
-    private static boolean checkOccupiedSpot(int x, int y, Vector<Word> wordsList)
+    private static boolean checkOccupiedSpot(int id, Vector<Word> wordsList)
     {
-        for (int i = 0; i < wordsList.size(); i++) {
-            Word word = wordsList.get(i);
-            if (x == word.getPosX() && y == word.getPosY()) {
-                return true;
-            }
-        }
-        return false;
+//        for (int i = 0; i < wordsList.size(); i++) {
+//            Word word = wordsList.get(i);
+//            if (x == word.getWordID()) {
+//                return true;
+//            }
+//        }
+//        return false;
+        return (wordsList.get(id) != null);
     }
 }

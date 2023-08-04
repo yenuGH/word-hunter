@@ -91,7 +91,11 @@ public class ClientMain
      * ClientMain()
      * entry point -> choose start server or join as client
      */
-    public ClientMain() throws IOException, InterruptedException {}
+    public ClientMain() throws IOException, InterruptedException {
+        for (int i = 0; i < 25; i++) {
+            wordsList.add(null);
+        }
+    }
 
     public void setAddress(String address) {
         if (Objects.equals(address, ""))

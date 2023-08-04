@@ -15,6 +15,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -63,11 +65,20 @@ public class WordHunterController {
         }
 
         for (Word word : wordsList) {
-            setWordPaneText(word);
-            startAnimation(word);
+            if (word != null) {
+                setWordPaneText(word);
+                startAnimation(word);
+            }
         }
 
         handleKeyTypedEvent();
+    }
+
+    public int[] positionToDimensions(int position) {
+        int x = position/5;
+        int y = position % 5;
+        int[] dimensions = {x, y};
+        return dimensions;
     }
 
     /**
@@ -75,19 +86,23 @@ public class WordHunterController {
      * @param word
      */
     public void startAnimation(Word word) {
-        wordPanes[word.getPosX()][word.getPosY()].initAnimation(word.getTimeToLiveRemaining());
+        int[] dimensions = positionToDimensions(word.getWordID());
+        wordPanes[dimensions[0]][dimensions[1]].initAnimation(word.getTimeToLiveRemaining());
     }
-    public void stopAnimation(Word word) {
-        wordPanes[word.getPosX()][word.getPosY()].closeAnimation();
+    public void stopAnimation(int position) {
+        int[] dimensions = positionToDimensions(position);
+        wordPanes[dimensions[0]][dimensions[1]].closeAnimation();
     }
 
     public void setWordPaneText(Word word) {
-        wordPanes[word.getPosX()][word.getPosY()].setWord(word.getWord());
+        int[] dimensions = positionToDimensions(word.getWordID());
+        wordPanes[dimensions[0]][dimensions[1]].setWord(word.getWord());
     }
 
-    public void clearWordPaneText(Word word) {
-        wordPanes[word.getPosX()][word.getPosY()].setWord("");
-        wordPanes[word.getPosX()][word.getPosY()].setColor(ServerMain.defaultColor);
+    public void clearWordPaneText(int position) {
+        int[] dimensions = positionToDimensions(position);
+        wordPanes[dimensions[0]][dimensions[1]].setWord("");
+        wordPanes[dimensions[0]][dimensions[1]].setColor(ServerMain.defaultColor);
     }
 
     private void clearUserInput(){
@@ -97,17 +112,36 @@ public class WordHunterController {
     }
 
     public void setWordPaneTextColor(Word word) {
-        wordPanes[word.getPosX()][word.getPosY()].setColor(word.getColor());
+        int[] dimensions = positionToDimensions(word.getWordID());
+        wordPanes[dimensions[0]][dimensions[1]].setColor(word.getColor());
     }
 
     public void clearWordPaneColor(Word word) {
-        wordPanes[word.getPosX()][word.getPosY()].setColor(ServerMain.defaultColor);
+        int[] dimensions = positionToDimensions(word.getWordID());
+        wordPanes[dimensions[0]][dimensions[1]].setColor(ServerMain.defaultColor);
     }
 
+    //TODO: change word serialization
     private void requestWordStateChanged(Word word, String token) {
-        String message = token + ServerMain.messageDelimiter + WordConversion.fromWord(word);
+        String message = "";
+        switch (token) {
+            case "reopenWord":
+                message = token + ServerMain.messageDelimiter + word.getWordID();
+                break;
+            case "reserveWord":
+                message = token + ServerMain.messageDelimiter + word.getWordID()
+                        + ServerMain.messageDelimiter + word.getColor();
+                break;
+            case "removeWord":
+                message = token + ServerMain.messageDelimiter + word.getWordID();
+                break;
+        }
+
+        //String message = token + ServerMain.messageDelimiter + WordConversion.fromWord(word);
         try {
-            clientMain.sendMsgToServer(message);
+            if (!message.equals("")) {
+                ClientMain.sendMsgToServer(message);
+            }
         } catch (IOException e) {
             System.out.println("Unable to signal word state changed to server");
         }
@@ -161,8 +195,10 @@ public class WordHunterController {
 
             private Word findTarget(String userInput) {
                 for (Word word : wordsList){
-                    if (word.getWord().startsWith(userInput)){
-                        return word;
+                    if (word != null) {
+                        if (word.getWord().startsWith(userInput)){
+                            return word;
+                        }
                     }
                 }
                 return null;

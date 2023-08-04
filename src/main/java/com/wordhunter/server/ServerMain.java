@@ -48,11 +48,13 @@ class WordTimerTask extends TimerTask {
             return;
         }
         // Remove once the TTL of the word is done
-        ServerMain.wordsList.remove(currentWord);
-        ServerMain.broadcast("removeWord" + ServerMain.messageDelimiter + WordConversion.fromWord(currentWord));
+        //ServerMain.wordsList.remove(currentWord);
+        ServerMain.wordsList.set(currentWord.getWordID(), null);
+        ServerMain.broadcast("removeWord" + ServerMain.messageDelimiter + currentWord.getWordID());
 
         Word newWord = WordGenerator.generateNewWord();
-        ServerMain.wordsList.add(newWord);
+        //ServerMain.wordsList.add(newWord);
+        ServerMain.wordsList.set(newWord.getWordID(), newWord);
         ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
 
         ServerMain.wordsListLock.release();
@@ -96,6 +98,10 @@ public class ServerMain extends Thread
      */
     public void run()
     {
+        for (int i = 0; i < 25; i++) {
+            wordsList.add(null);
+        }
+
         System.out.println("starting server");
         WordGenerator.readDictionary();
 
@@ -108,7 +114,7 @@ public class ServerMain extends Thread
         {
             timerStartTime = System.nanoTime();
             // TODO: CHANGE THIS TIMER BACK TO 60; it's 15 for testing
-            Thread.sleep(startGameTimeMin * 15000);
+            Thread.sleep(startGameTimeMin * 5000);
             ServerMain.serverState = ServerState.GAME_IN_PROGRESS;
         }
         catch (InterruptedException e)
@@ -127,7 +133,7 @@ public class ServerMain extends Thread
         // generating words and broadcast each word to all client
         for (int i = 0; i < wordLimit; i++) {
             Word newWord = WordGenerator.generateNewWord();
-            wordsList.add(newWord);
+            wordsList.set(newWord.getWordID(), newWord);
             ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
 
             Timer timer = new Timer();
@@ -138,7 +144,7 @@ public class ServerMain extends Thread
         try
         {
             timerStartTime = System.nanoTime();
-            Thread.sleep(gameMaxTimeMin * 60000);
+            Thread.sleep(gameMaxTimeMin * 30000);
             thread.sock.close(); // stop server from accepting new connections
             ServerMain.serverState = ServerState.GAME_END;
         }
