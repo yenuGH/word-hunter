@@ -76,7 +76,7 @@ public class ServerMain extends Thread
     public final static int clientLimit = 6; // update ServerAcceptClients.colorIds if you change
     public final static int startGameTimeMin = 1; // change later
     public final static int gameMaxTimeMin = 1; // change later
-    public final static int heartBeatInterval = 1000;
+    public final static int heartBeatInterval = 2500;
 
 
     // server exclusive variables
@@ -87,7 +87,7 @@ public class ServerMain extends Thread
     public static final Semaphore wordsListLock = new Semaphore(1);
 
     // game variables
-    public final static int wordLimit = 15;
+    public final static int wordLimit = 5;
     public final static int dimension = 5;
     public static final Vector<Word> wordsList = new Vector<>();
     public final static String defaultColor = "#000000";
@@ -114,7 +114,7 @@ public class ServerMain extends Thread
         {
             timerStartTime = System.nanoTime();
             // TODO: CHANGE THIS TIMER BACK TO 60; it's 15 for testing
-            Thread.sleep(startGameTimeMin * 5000);
+            Thread.sleep(startGameTimeMin * 15000);
             ServerMain.serverState = ServerState.GAME_IN_PROGRESS;
         }
         catch (InterruptedException e)
@@ -144,7 +144,7 @@ public class ServerMain extends Thread
         try
         {
             timerStartTime = System.nanoTime();
-            Thread.sleep(gameMaxTimeMin * 30000);
+            Thread.sleep(gameMaxTimeMin * 60000);
             thread.sock.close(); // stop server from accepting new connections
             ServerMain.serverState = ServerState.GAME_END;
         }
