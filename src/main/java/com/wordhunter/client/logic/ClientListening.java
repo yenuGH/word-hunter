@@ -273,7 +273,7 @@ class ClientListening extends Thread {
         }
         Platform.runLater(() -> {
             if (removed.getColor().equals(ClientMain.colorId)) {
-                if (wordHunterController != null) {
+                if (wordHunterController != null && score > 0) {
                     wordHunterController.setPlayerScore(score);
                 }
             }
