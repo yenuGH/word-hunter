@@ -10,6 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 /**
@@ -40,6 +42,20 @@ public class WinnerPageController {
     }
 
     public void updateScoreList(Vector<Player> playersList) {
+
+        playersList.sort(new Comparator<Player>() {
+            @Override
+            public int compare(Player o1, Player o2) {
+                if (o1.getScore() > o2.getScore()) {
+                    return 1;
+                }
+                if (o1.getScore() < o2.getScore()) {
+                    return -1;
+                }
+                return 0;
+            }
+        });
+
         for (Player player : playersList)
         {
             Platform.runLater(() -> scoreViewList.add(new ScoreListCell(player)));

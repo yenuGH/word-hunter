@@ -76,7 +76,7 @@ public class ServerMain extends Thread
     public static long timerStartTime;
 
     // game variables
-    public final static int wordLimit = 10;
+    public final static int wordLimit = 15;
     public final static int dimension = 5;
     public static WordList wordsList;
     public final static String defaultColor = "#000000";
