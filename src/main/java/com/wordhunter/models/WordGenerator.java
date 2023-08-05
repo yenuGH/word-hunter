@@ -1,6 +1,5 @@
 package com.wordhunter.models;
 
-import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.server.ServerMain;
 
 import java.io.File;

@@ -2,27 +2,21 @@ package com.wordhunter.client.ui;
 import com.wordhunter.client.logic.ClientMain;
 import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Word;
+import com.wordhunter.models.WordGenerator;
 import com.wordhunter.models.WordList;
-import com.wordhunter.models.WordState;
 import com.wordhunter.server.ServerMain;
-import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.Vector;
 
 public class WordHunterController {
-    public ProgressBar healthBarBar;
     @FXML
     private GridPane grids;
 
@@ -43,7 +37,7 @@ public class WordHunterController {
 
     public WordHunterController()
     {
-        wordsList = new WordList(25);
+        wordsList = new WordList(WordGenerator.dimension);
     }
 
     public static WordHunterController getInstance() {

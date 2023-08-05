@@ -130,7 +130,6 @@ class PlayerThread extends Thread {
     {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int position = Integer.parseInt(tokenList[1]);
-        //Word target = WordConversion.toWord(tokenList[1]);
         Word target = ServerMain.wordsList.get(position);
         if (target == null) {
             return;
@@ -139,7 +138,7 @@ class PlayerThread extends Thread {
         this.player.addScore(target.getWord().length());
         System.out.println("Player " + player.getName() + "'s score is " + this.player.getScore());
 
-//        ServerMain.wordsList.remove(target);
+        ServerMain.wordsList.release(position);
         ServerMain.wordsList.set(target.getWordID(), null);
         System.out.println("Size of wordlist " + ServerMain.wordsList.getSize());
 
@@ -151,18 +150,16 @@ class PlayerThread extends Thread {
 
         // Add new word
         Word newWord = WordGenerator.generateNewWord();
-        //ServerMain.wordsList.add(newWord);
         ServerMain.wordsList.set(newWord.getWordID(), newWord);
         ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
     }
 
     public void handleReserveWord(String input) {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
-        //Word target = WordConversion.toWord(tokenList[1]);
         int position = Integer.parseInt(tokenList[1]);
         String color = tokenList[2];
-        //Word target = WordConversion.toWord(tokenList[1]);
-        Word target = ServerMain.wordsList.get(position);
+
+        Word target = ServerMain.wordsList.get(position); // lock
         if (target == null) {
             return;
         }
@@ -173,24 +170,14 @@ class PlayerThread extends Thread {
                     + target.getWordID() + ServerMain.messageDelimiter
                     + target.getColor());
         }
-
-//        for (Word word : ServerMain.wordsList) {
-//            if (target.equals(word) && word.getState() == WordState.OPEN) {
-//                word.setState(WordState.RESERVED);
-//                word.setColor(target.getColor());
-//                ServerMain.broadcast("reserveWord" + ServerMain.messageDelimiter
-//                        + word.getWordID() + ServerMain.messageDelimiter
-//                        + word.getColor());
-//                break;
-//            }
-//        }
+        ServerMain.wordsList.release(position);
     }
 
     public void handleReopenWord(String input) {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int position = Integer.parseInt(tokenList[1]);
-        //Word target = WordConversion.toWord(tokenList[1]);
-        Word target = ServerMain.wordsList.get(position);
+
+        Word target = ServerMain.wordsList.get(position); // lock
         if (target == null) {
             return;
         }
@@ -200,14 +187,6 @@ class PlayerThread extends Thread {
             target.setColor(ServerMain.defaultColor);
             ServerMain.broadcast("reopenWord" + ServerMain.messageDelimiter + target.getWordID());
         }
-
-//        for (Word word : ServerMain.wordsList) {
-//            if (target.equals(word) && word.getState() == WordState.RESERVED) {
-//                word.setState(WordState.OPEN);
-//                word.setColor(ServerMain.defaultColor);
-//                ServerMain.broadcast("reopenWord" + ServerMain.messageDelimiter + word.getWordID());
-//                break;
-//            }
-//        }
+        ServerMain.wordsList.release(position);
     }
 }

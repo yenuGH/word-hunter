@@ -1,22 +1,116 @@
-*
+.root
 {
     /* only used for view within scene builder*/
     -preferred-window-width: 800;
     -preferred-window-height: 500;
+
+    -bg-main: #5aa2e0;
+    -bg-main-dark: #3076b3;
+    -border-color: #c5d0d9;
 }
 
-/* server waiting room page */
-.list-cell
+/* common components */
+Button
 {
-    -fx-font-size: 20;
+    -fx-background-color: -bg-main;
+    -fx-text-fill: white;
+    -fx-border-color: -bg-main;
+    -fx-border-width: 5;
+    -fx-padding: 5;
+    -fx-background-insets: 2px;
+    -fx-border-radius: 5;
+}
+Button:hover
+{
+    -fx-background-color: -bg-main-dark;
+    -fx-border-color: -bg-main-dark;
+}
+Button:pressed
+{
+    -fx-border-color: white;
+}
+TextField
+{
+    -fx-border-color: -bg-main-dark;
+    -fx-border-radius: 5;
 }
 /* root container of all pages*/
 .main_container
 {
     -fx-pref-width: -preferred-window-width;
     -fx-pref-height: -preferred-window-height;
-
 }
+Label
+{
+    -fx-text-fill: -bg-main-dark;
+}
+
+/* game page */
+#grid
+{
+    -fx-border-color: -bg-main;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+}
+#grid .label
+{
+    -fx-text-fill: black;
+}
+#userInput
+{
+    -fx-border-color: -bg-main;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-height: 5;
+    -fx-focus-color: -bg-main;
+    -fx-faint-focus-color: transparent;
+    -fx-text-fill: -bg-main-dark;
+    -fx-font-weight: bold;
+}
+
+/* server waiting room page */
+#playerList .list-view,
+#scoreView .list-view
+{
+    -fx-background-radius: 10;
+    -fx-background-color: transparent;
+    -fx-border-radius: 10;
+}
+#playerList .list-cell,
+#scoreView .list-cell
+{
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-font-size: 20;
+}
+#playerList,
+#scoreView
+{
+    -fx-border-color: -bg-main;
+    -fx-border-width: 3;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+#playerList .increment-button,
+#playerList .decrement-button,
+#playerList .scroll-bar:vertical
+{
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+#playerList .scroll-bar:vertical .thumb
+{
+    -fx-background-color: -bg-main;
+}
+#playerList .scroll-bar:vertical .increment-button .increment-arrow,
+#playerList .scroll-bar:vertical .decrement-button .decrement-arrow
+{
+    -fx-background-color: transparent;
+    -fx-padding: 0 7;
+}
+
 /* reconnection overlay values*/
 .progress-indicator:indeterminate > .spinner
 {
