@@ -14,6 +14,7 @@ import com.wordhunter.client.ui.ServerPageController;
 import com.wordhunter.client.ui.WinnerPageController;
 import com.wordhunter.models.Word;
 import com.wordhunter.models.Player;
+import com.wordhunter.models.WordGenerator;
 import com.wordhunter.models.WordList;
 import com.wordhunter.server.ServerMain;
 import com.wordhunter.server.ServerState;
@@ -94,7 +95,7 @@ public class ClientMain
      * entry point -> choose start server or join as client
      */
     public ClientMain() throws IOException, InterruptedException {
-        wordsList = new WordList(25);
+        wordsList = new WordList(WordGenerator.dimension);
     }
 
     public void setAddress(String address) {

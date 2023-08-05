@@ -1,16 +1,19 @@
 /**
 * {} are not included in message, they just differentiate data from keywords
-* TODO: change keywords to numerical codes?
 **/
 
 ------------------------------------------------------------------------------------------------------
 // client messages
 // client join request
 "username!{inputtedUsername}"
-// client reconnect request
-"reconnect!username!{inputtedUsername}!colorId!{previousColorId}"
 // heartbeat
 ""
+// client reserve word
+"reserveWord!{arrayPositionID}!{playerColor}"
+// client reopen word
+"reopenWord!{arrayPositionID}"
+// client complete word
+"removeWord!{arrayPositionID}"
 
 ------------------------------------------------------------------------------------------------------
 // server messages
@@ -18,8 +21,6 @@
 "newPlayerJoin!playerList!{serializedPlayerList}"
 // server player disconnect (broadcast)
 "playerDisconnect!playerList!{serializedPlayerList}"
-// server player reconnect (broadcast)
-"reconnect!username!{username}!colorId!{newColorId}"
 // heartbeat ack
 ""
 
@@ -28,14 +29,19 @@
 // server game start
 "gameStart!gameTimer!{valueInSeconds}"
 
-// TODO: server player updated health value
+// server add new word
+"addNewWord!{newWordObj}"
+// server remove word
+"removeWord!{arrayPositionID}!{score}"
+// server reserve word
+"reserveWord!{arrayPositionID}"
+// server reopen word
+"reopenWord!{arrayPositionID}"
+// server word completed
+"removeWord!{arrayPositionID}!{score}"
 
-// TODO: server player new word (send word list as consecutive in same message?)
-
-
-// TODO: server player updated game timer
-
-// TODO: server game over (broadcast)
+// server game over (broadcast)
+"gameOver!{playerList}"
 
 // server error message
 "error!{message}"

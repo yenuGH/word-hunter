@@ -32,7 +32,6 @@ public class WinnerPageController {
     @FXML
     public ListView<ScoreListCell> scoreView;
     private ObservableList<ScoreListCell> scoreViewList = FXCollections.observableList(new ArrayList<>());
-    private Vector<Player> playerList = new Vector<>();
 
     @FXML
     public void initialize() {
@@ -49,5 +48,6 @@ public class WinnerPageController {
 
     public void updateWinner(Player winner) {
         winnerText.setText(winner.getName());
+        winnerText.setStyle("-fx-text-fill: " + winner.getColor());
     }
 }

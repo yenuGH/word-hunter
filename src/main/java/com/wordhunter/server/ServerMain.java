@@ -43,12 +43,10 @@ class WordTimerTask extends TimerTask {
     }
     public void run() {
         // Remove once the TTL of the word is done
-        //ServerMain.wordsList.remove(currentWord);
         ServerMain.wordsList.set(currentWord.getWordID(), null);
         ServerMain.broadcast("removeWord" + ServerMain.messageDelimiter + currentWord.getWordID() + ServerMain.messageDelimiter + 0);
 
         Word newWord = WordGenerator.generateNewWord();
-        //ServerMain.wordsList.add(newWord);
         ServerMain.wordsList.set(newWord.getWordID(), newWord);
         ServerMain.broadcast("addNewWord" + ServerMain.messageDelimiter + WordConversion.fromWord(newWord));
 
@@ -85,7 +83,7 @@ public class ServerMain extends Thread
 
     public ServerMain()
     {
-        this.wordsList = new WordList(25);
+        this.wordsList = new WordList(WordGenerator.dimension);
     }
 
     /**
@@ -94,10 +92,6 @@ public class ServerMain extends Thread
      */
     public void run()
     {
-//        for (int i = 0; i < 25; i++) {
-//            wordsList.add(null);
-//        }
-
         System.out.println("starting server");
         WordGenerator.readDictionary();
 
@@ -119,7 +113,6 @@ public class ServerMain extends Thread
         }
 
         System.out.println("server game start");
-
 
 
         broadcast("gameStart" + messageDelimiter

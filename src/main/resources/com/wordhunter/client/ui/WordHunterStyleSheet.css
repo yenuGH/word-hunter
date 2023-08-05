@@ -69,19 +69,22 @@ Label
 }
 
 /* server waiting room page */
-#playerList .list-view
+#playerList .list-view,
+#scoreView .list-view
 {
     -fx-background-radius: 10;
     -fx-background-color: transparent;
     -fx-border-radius: 10;
 }
-#playerList .list-cell
+#playerList .list-cell,
+#scoreView .list-cell
 {
     -fx-background-radius: 10;
     -fx-border-radius: 10;
     -fx-font-size: 20;
 }
-#playerList
+#playerList,
+#scoreView
 {
     -fx-border-color: -bg-main;
     -fx-border-width: 3;

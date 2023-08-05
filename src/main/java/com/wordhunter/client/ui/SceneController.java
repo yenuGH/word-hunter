@@ -116,7 +116,7 @@ public class SceneController {
     }
 
     public void showWinnerPage() {
-        Parent root = null;
+        root = null;
         try {
             root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("WinnerPage.fxml")));
         } catch (IOException e) {

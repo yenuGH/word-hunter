@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--waiting room page. Shows players currently in server + time until game start-->
+<!--winner page. Shows all player names and scores-->
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane styleClass="main_container" stylesheets="@WordHunterStyleSheet.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wordhunter.client.ui.WinnerPageController">
+<StackPane styleClass="main_container" stylesheets="@WordHunterStyleSheet.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wordhunter.client.ui.WinnerPageController">
    <VBox alignment="CENTER">
       <StackPane.margin>
          <Insets />
@@ -17,14 +17,15 @@
       <padding>
          <Insets left="50.0" right="50.0" />
       </padding>
-      <ListView fx:id="scoreView" focusTraversable="false" mouseTransparent="true" prefHeight="318.0" prefWidth="700.0" />
-      <!-- player name -->
+      <!-- player scores and names -->
+      <ListView id="scoreView" fx:id="scoreView" focusTraversable="false" mouseTransparent="true" prefHeight="318.0" prefWidth="700.0" />
+
+      <!-- winner name -->
       <Label alignment="CENTER" contentDisplay="CENTER" text="Winner: ">
          <font>
             <Font size="30.0" />
          </font>
       </Label>
-      <!-- timer -->
       <Label fx:id="winnerText" alignment="CENTER">
          <font>
             <Font size="24.0" />

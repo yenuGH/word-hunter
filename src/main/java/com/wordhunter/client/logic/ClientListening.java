@@ -32,6 +32,7 @@ class ClientListening extends Thread {
 
     private WordHunterController wordHunterController;
     private boolean heartBeatSent = false;
+    private boolean gameOver = false;
 
     /**
      * ClientListening()
@@ -56,8 +57,6 @@ class ClientListening extends Thread {
         messageToCallback.put("removeWord", ClientListening::handleCompletedWord);
         messageToCallback.put("reserveWord", ClientListening::handleReserveWord);
         messageToCallback.put("reopenWord", ClientListening::handleReopenWord);
-
-        SceneController.getInstance().toggleReconnectionOverlay(false); // TODO: move to reconnect handle when implemented
     }
 
     /**
@@ -88,12 +87,11 @@ class ClientListening extends Thread {
                         handleServerMessage(input);
                     }
                 }
-            } catch (IOException e) // disconnect throws SocketException
+            } catch (IOException e) // disconnect
             {
                 try {
                     if(!heartBeatSent)
                     {
-                        System.out.println("sending heartbeat"); // TODO: REMOVE
                         heartBeatSent = true;
                         ClientMain.sendMsgToServer("");
                     }
@@ -104,23 +102,13 @@ class ClientListening extends Thread {
                         System.exit(0);
                     }
                 } catch (IOException ex) {
-                    System.out.println("server down");
-                    System.exit(0);
+                    if(!gameOver) {
+                        System.out.println("server down");
+                        System.exit(0);
+                    }
+                    return;
                 }
             }
-        }
-    }
-
-    /**
-     * disconnect()
-     * disconnect with server and attempt reconnection if max retries not reached
-     */
-    public void disconnect() throws IOException {
-        sock.close();
-        if (ClientMain.reconnectAttempts < ClientMain.reconnectMaxAttempt) {
-            SceneController.getInstance().toggleReconnectionOverlay(true);
-            System.out.println("reconnection attempt " + ClientMain.reconnectAttempts);
-            parent.connectServer(true);
         }
     }
 
@@ -199,29 +187,44 @@ class ClientListening extends Thread {
         });
     }
 
-    public void endGameScreen(String input) {
+    /**
+     * endGameScreen()
+     * close socket, display winner and everyones scores, exit after x seconds
+     * @param input playerlist
+     */
+    public void endGameScreen(String input)
+    {
+        // close socket and set flag to prevent immediate exit
+        gameOver = true;
+        try {
+            sock.close();
+        }
+        catch (IOException ignored) { }
+
+        // get players + scores
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Vector<Player> players = PlayerConversion.toPlayers(tokenList[1]);
 
+        // show winner page
         Platform.runLater(() -> {
             SceneController.getInstance().showWinnerPage();
+            SceneController.getInstance().setMainColor(parent.colorId);
         });
 
-        //TODO: have an end screen and put the winner here
+        // find and display the winner's username
         Player winner = findWinner(players);
         System.out.println("Winner is " + winner.getName() + " with score " + winner.getScore());
         Platform.runLater(() -> {
             parent.getWinnerPageController().updateScoreList(players);
             parent.getWinnerPageController().updateWinner(winner);
-            SceneController.getInstance().setMainColor(parent.colorId);
         });
 
+        // close program after 30s
         try {
-            Thread.sleep(15000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.sleep(30000);
         }
-        Platform.runLater(() -> SceneController.getInstance().closeStage());
+        catch (InterruptedException ignored) { }
+
         System.exit(0);
     }
 
@@ -248,7 +251,6 @@ class ClientListening extends Thread {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         Word newWord = WordConversion.toWord(tokenList[1]);
 
-//        ClientMain.wordsList.add(newWord);
         ClientMain.wordsList.set(newWord.getWordID(), newWord);
         if (wordHunterController != null) {
             Platform.runLater(() -> {
