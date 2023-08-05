@@ -106,7 +106,6 @@ public class SceneController {
         }
         Scene scene = new Scene(Objects.requireNonNull(root));
         this.scene = scene;
-        stage.close();
 
         stage.setScene(scene);
         stage.show();
