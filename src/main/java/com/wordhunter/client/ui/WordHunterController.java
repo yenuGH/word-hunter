@@ -103,6 +103,7 @@ public class WordHunterController {
     public void setWordPaneText(Word word) {
         int[] dimensions = positionToDimensions(word.getWordID());
         wordPanes[dimensions[0]][dimensions[1]].setWord(word.getWord());
+        wordPanes[dimensions[0]][dimensions[1]].setOpacity(1);
     }
 
     public void clearWordPaneText(int position) {

@@ -51,6 +51,10 @@ public class WordPane extends StackPane {
         this.label.setText(word);
     }
 
+    public void setOpacity(long opacity){
+        this.label.setOpacity(opacity);
+    }
+
     public void setColor(String color) {
         this.label.setTextFill(Color.web(color));
     }
