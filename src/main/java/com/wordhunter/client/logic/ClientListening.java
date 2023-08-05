@@ -1,7 +1,6 @@
 package com.wordhunter.client.logic;
 
 import com.wordhunter.client.ui.SceneController;
-import com.wordhunter.client.ui.WinnerPageController;
 import com.wordhunter.client.ui.WordHunterController;
 import com.wordhunter.conversion.PlayerConversion;
 import com.wordhunter.conversion.WordConversion;
@@ -16,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.*;
 
 /**
@@ -102,9 +100,7 @@ class ClientListening extends Thread {
                     else
                     {
                         System.out.println("failed to read from socket. disconnecting...");
-                        e.printStackTrace();
-
-                        System.out.println("disconnected");
+                        sock.close();
                         System.exit(0);
                     }
                 } catch (IOException ex) {
@@ -260,10 +256,10 @@ class ClientListening extends Thread {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int removedWordId = Integer.parseInt(tokenList[1]);
         int score = Integer.parseInt(tokenList[2]);
-        //Word removedWord = WordConversion.toWord(tokenList[1]);
 
         Word removed = ClientMain.wordsList.get(removedWordId); // locks
-        if (removed == null) {
+        if (removed == null)
+        {
             return;
         }
         Platform.runLater(() -> {
@@ -273,11 +269,12 @@ class ClientListening extends Thread {
                 }
             }
         });
-
+        ClientMain.wordsList.release(removedWordId);
         ClientMain.wordsList.set(removedWordId, null);
 
         Platform.runLater(() -> {
-            if (wordHunterController != null) {
+            if (wordHunterController != null)
+            {
                 wordHunterController.clearWordPaneText(removedWordId);
                 wordHunterController.stopAnimation(removedWordId);
             }
@@ -290,15 +287,13 @@ class ClientListening extends Thread {
         int position = Integer.parseInt(tokenList[1]);
         String color = tokenList[2];
 
-        //Word reservedWord = WordConversion.toWord(tokenList[1]);
-
         Word reserved = ClientMain.wordsList.get(position); // locks
-        if (reserved == null) {
+        if (reserved == null)
+        {
             return;
         }
         reserved.setState(WordState.RESERVED);
         reserved.setColor(color);
-//        ClientMain.wordsList.set(position, reserved);
 
         Platform.runLater(() -> {
             if (wordHunterController != null) {
@@ -312,35 +307,6 @@ class ClientListening extends Thread {
             }
             ClientMain.wordsList.release(position);
         });
-
-
-
-//        // if word in list
-//        int index = ClientMain.wordsList.indexOf(reservedWord);
-//        if (index != -1 )
-//        {
-//            Word word = ClientMain.wordsList.get(index);
-//            word.setState(WordState.RESERVED);
-//            word.setColor(reservedWord.getColor());
-//
-//            // set to player color
-//            Platform.runLater(() -> {
-//                if (wordHunterController != null) {
-//                    wordHunterController.setWordPaneTextColor(word);
-//                    wordHunterController.startAnimation(word);
-//                }
-//            });
-//
-//            // is current player
-//            if (reservedWord.getColor().equals(ClientMain.colorId))
-//            {
-//                Platform.runLater(() -> {
-//                    if (wordHunterController != null) {
-//                        wordHunterController.reservedWord = word;
-//                    }
-//                });
-//            }
-//        }
     }
 
     public void handleReopenWord(String input) {
@@ -349,7 +315,6 @@ class ClientListening extends Thread {
 
         Word reopened = ClientMain.wordsList.get(position);
         if (reopened == null) {
-            ClientMain.wordsList.release(position);
             return;
         }
         reopened.setState(WordState.OPEN);
@@ -371,5 +336,4 @@ class ClientListening extends Thread {
             parent.getServerPageController().updateStartTimer(duration);
         });
     }
-
 }

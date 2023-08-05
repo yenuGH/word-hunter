@@ -60,7 +60,6 @@ class PlayerThread extends Thread {
         // set up input stream
         InputStream is;
         try {
-            sock.setSoTimeout(3 * ServerMain.heartBeatInterval);
             is = sock.getInputStream();
         } catch (IOException e) {
             System.out.println("failed to get input stream");
@@ -80,6 +79,7 @@ class PlayerThread extends Thread {
                 }
             } catch (IOException e) // disconnect
             {
+                e.printStackTrace();
                 try {
                     disconnect();
                     System.out.println("Player" + (index + 1) + " disconnected");

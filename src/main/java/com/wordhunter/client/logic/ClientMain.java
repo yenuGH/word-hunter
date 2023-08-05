@@ -94,9 +94,6 @@ public class ClientMain
      * entry point -> choose start server or join as client
      */
     public ClientMain() throws IOException, InterruptedException {
-//        for (int i = 0; i < 25; i++) {
-//            wordsList.add(null);
-//        }
         wordsList = new WordList(25);
     }
 
