@@ -7,7 +7,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class Main extends Application {
-    private final static String TITLE = "Word Hunter";
     @Override
     public void start(Stage stage) throws IOException, InterruptedException {
         SceneController sceneController = SceneController.getInstance();

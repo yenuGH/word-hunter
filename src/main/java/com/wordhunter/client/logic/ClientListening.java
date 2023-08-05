@@ -25,11 +25,8 @@ import java.util.*;
 class ClientListening extends Thread {
     public Socket sock;
     public ClientMain parent;
-
     boolean gotColorId = false;     // used to get colorId from first connection message
-
     private final Map<String, MessageMethod> messageToCallback = new HashMap<>();
-
     private WordHunterController wordHunterController;
     private boolean heartBeatSent = false;
     private boolean gameOver = false;
@@ -157,8 +154,6 @@ class ClientListening extends Thread {
 
     /**
      * playerDisconnect()
-     * TODO:
-     *
      * @param input message from server
      */
     public void playerDisconnect(String input) {
@@ -167,8 +162,6 @@ class ClientListening extends Thread {
 
     /**
      * error()
-     * TODO: if other error messages, add implementations
-     *
      * @param input message from server
      */
     public void error(String input) {
@@ -189,7 +182,7 @@ class ClientListening extends Thread {
 
     /**
      * endGameScreen()
-     * close socket, display winner and everyones scores, exit after x seconds
+     * close socket, display winner and everyone's scores, exit after x seconds
      * @param input playerlist
      */
     public void endGameScreen(String input)
@@ -228,9 +221,14 @@ class ClientListening extends Thread {
         System.exit(0);
     }
 
+    /**
+     * helper method to find the winning player
+     * @param playerList list of players
+     * @return the winner
+     */
     public static Player findWinner(Vector<Player> playerList) {
         if (playerList.isEmpty()) {
-            return null; // Return null if the playerList is empty
+            System.exit(0); // Exit if the playerList is empty
         }
 
         Player winner = playerList.get(0);
@@ -260,7 +258,10 @@ class ClientListening extends Thread {
         }
     }
 
-
+    /**
+     * to remove a word, either by timeout or completion
+     * @param input the position of the word
+     */
     public void handleCompletedWord(String input) {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int removedWordId = Integer.parseInt(tokenList[1]);
@@ -290,6 +291,10 @@ class ClientListening extends Thread {
         });
     }
 
+    /**
+     * lock a word to a certain player, after server validates the request
+     * @param input the position of the word
+     */
     public void handleReserveWord(String input) {
         // get reserved word
         String[] tokenList = input.split(ServerMain.messageDelimiter);
@@ -311,13 +316,17 @@ class ClientListening extends Thread {
             }
             if (reserved.getColor().equals(ClientMain.colorId)) {
                 if (wordHunterController != null) {
-                    wordHunterController.reservedWord = reserved; // TODO: look at later
+                    wordHunterController.reservedWord = reserved;
                 }
             }
             ClientMain.wordsList.release(position);
         });
     }
 
+    /**
+     * unlock a word after a player mistypes it
+     * @param input the position of the word
+     */
     public void handleReopenWord(String input) {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int position = Integer.parseInt(tokenList[1]);
@@ -338,6 +347,10 @@ class ClientListening extends Thread {
         });
     }
 
+    /**
+     * tick the timer until the game starts
+     * @param input the remaining seconds
+     */
     public void updateStartTimer(String input) {
         int duration = Integer.parseInt(input.replace("startTimer!", ""));
 

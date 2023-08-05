@@ -29,7 +29,7 @@ public class WordHunterController {
     // client connection and game variables
     public ClientMain clientMain;
     private WordList wordsList;
-    private WordPane[][] wordPanes = new WordPane[ServerMain.dimension][ServerMain.dimension];
+    private final WordPane[][] wordPanes = new WordPane[ServerMain.dimension][ServerMain.dimension];
     public Word reservedWord;
 
 
@@ -54,7 +54,6 @@ public class WordHunterController {
         System.out.println("Size of wordlist " + clientMain.wordsList.getSize());
         // Make a border
         grids.setStyle(WordPane.BORDER);
-        //System.out.println(grids);
 
         // TODO: start the timer of each word and animation of each word
         for (int row = 0; row < grids.getRowCount(); row++) {
@@ -128,7 +127,6 @@ public class WordHunterController {
         wordPanes[dimensions[0]][dimensions[1]].setColor(ServerMain.defaultColor);
     }
 
-    //TODO: change word serialization
     private void requestWordStateChanged(Word word, String token) {
         String message = "";
         switch (token) {
@@ -144,7 +142,6 @@ public class WordHunterController {
                 break;
         }
 
-        //String message = token + ServerMain.messageDelimiter + WordConversion.fromWord(word);
         try {
             if (!message.equals("")) {
                 ClientMain.sendMsgToServer(message);
@@ -160,7 +157,6 @@ public class WordHunterController {
 
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String oldInput, String newInput) {
-                // TODO: disable backspace and delete key
                 if (oldInput.length() > newInput.length()) {
                     return;
                 }
@@ -170,8 +166,6 @@ public class WordHunterController {
                     if (targetWord == null)
                     {
                         // Case 1: word is not found
-                        // TODO: add a warning message on the screen
-                        System.out.println("Warning: word is not found, or it it reserved");
                         clearUserInput();
                         return;
                     } else

@@ -1,10 +1,8 @@
 package com.wordhunter.client.ui;
 
 import com.wordhunter.client.logic.ClientMain;
-import com.wordhunter.client.ui.SceneController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -26,7 +24,7 @@ public class StartPageController {
 
     @FXML
     public void createButtonClicked(ActionEvent e){
-        if (getUsername() == false){
+        if (!getUsername()){
             return;
         }
 
@@ -44,18 +42,9 @@ public class StartPageController {
         }
     }
 
-    public static boolean isNumeric(String str) {
-        try {
-            Double.parseDouble(str);
-            return true;
-        } catch(NumberFormatException e){
-            return false;
-        }
-    }
-
     @FXML
     public void joinButtonClicked(ActionEvent e){
-        if (getUsername() == false){
+        if (!getUsername()){
             return;
         }
 

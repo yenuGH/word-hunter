@@ -8,11 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.util.Callback;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -45,8 +41,8 @@ public class ServerPageController{
 
     @FXML
     public ListView<PlayerListCell> playerView;
-    private ObservableList<PlayerListCell> playerViewList = FXCollections.observableList(new ArrayList<>());
-    private Vector<Player> playerList = new Vector<>();
+    private final ObservableList<PlayerListCell> playerViewList = FXCollections.observableList(new ArrayList<>());
+    private final Vector<Player> playerList = new Vector<>();
 
     @FXML
     public void initialize()
@@ -55,14 +51,9 @@ public class ServerPageController{
         ClientMain.getInstance().setServerPageController(this);
     }
 
-    public void changeServerIPLabel(int serverIP){
-        this.serverIPLabel.setText("" + serverIP);
-    }
-
     public void updateStartTimer(int duration){
 
         // variable used in lambda expression must be final
-        // but i need to change this so i did a roundabout way c:
         final int[] durationArray = {duration};
 
         Timer timer = new Timer();
