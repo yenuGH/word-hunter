@@ -196,7 +196,7 @@ class ServerAcceptClients extends Thread {
 
             // send to new client how long until game starts (change to broadcast to make sure all timers are right?)
             long elapsedTimeNs = System.nanoTime() - ServerMain.timerStartTime;
-            long remainingSeconds = (ServerMain.startGameTimeMin * 60)
+            long remainingSeconds = (ServerMain.startGameTimeMin * 15)
                     - TimeUnit.SECONDS.convert(elapsedTimeNs, TimeUnit.NANOSECONDS);
             ServerMain.sendMessageToClient(client, "startTimer" + ServerMain.messageDelimiter
                     + remainingSeconds);
