@@ -1,19 +1,18 @@
 package com.wordhunter.models;
 
-import com.wordhunter.server.ServerMain;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Random;
 
 public class Word implements Serializable {
-    private String word;
+    private final String word;
     private WordState state;
     private String color;
-    //private int posX;
-    //private int posY;
-    private int wordID;
-    private long expiredTime;
+    private final int wordID;
+    private final long expiredTime;
+
+    private final int LOWER_BOUND_TTL = 8000;
+    private final int UPPER_BOUND_TTL = 16000;
 
     public Word(String word, int wordID) {
         this.word = word;
@@ -25,9 +24,7 @@ public class Word implements Serializable {
 
     public long generateTimeToLive() {
         Random random = new Random();
-        int lowerBound = 8000;
-        int upperBound = 16000;
-        return random.nextInt((upperBound - lowerBound) + 1) + lowerBound;
+        return random.nextInt((UPPER_BOUND_TTL - LOWER_BOUND_TTL) + 1) + LOWER_BOUND_TTL;
     }
 
     public long getTimeToLiveRemaining() {
@@ -59,11 +56,7 @@ public class Word implements Serializable {
         return wordID;
     }
 
-    public void setWordID(int wordID) {
-        this.wordID = wordID;
-    }
-
-    @Override
+     @Override
     public String toString() {
         return "Word{" +
                 "word='" + word + '\'' +

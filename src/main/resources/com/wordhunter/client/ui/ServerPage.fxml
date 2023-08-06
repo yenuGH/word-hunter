@@ -21,7 +21,7 @@
       </padding>
       <!-- top section-->
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-         <Label text="Server IP:">
+         <Label text="Server IP: ">
             <font>
                <Font size="35.0" />
             </font>

@@ -8,7 +8,6 @@ import java.util.Scanner;
 import java.util.Vector;
 
 public class WordGenerator {
-
     public final static int dimension = 25;
     public static final Vector<String> dictionary = new Vector<>();
 
@@ -56,7 +55,7 @@ public class WordGenerator {
     {
         boolean result = false;
         for (int i = 0; i < wordsList.getSize(); i++) {
-            Word word = wordsList.get(i);
+            Word word = wordsList.get(i); // lock
             result = word != null && (wordStr.charAt(0) == word.getWord().charAt(0));
             wordsList.release(i);
 
@@ -72,7 +71,7 @@ public class WordGenerator {
         boolean isOccupied = wordsList.isOccupied(index);
 
         if (!isOccupied){
-            wordsList.get(index);
+            wordsList.get(index); // lock
         }
         return isOccupied;
     }

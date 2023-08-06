@@ -1,28 +1,17 @@
 package com.wordhunter.client.logic;
 
-/*
- * ClientMain.java
- *
- * main tcp client program:
- * - creates tcp server in thread
- * - connects to server as a client
- * - uses thread to listen for server messages
- * - handles server disconnect by exiting
- */
-
 import com.wordhunter.client.ui.ServerPageController;
 import com.wordhunter.client.ui.WinnerPageController;
-import com.wordhunter.models.Word;
-import com.wordhunter.models.Player;
 import com.wordhunter.models.WordGenerator;
 import com.wordhunter.models.WordList;
 import com.wordhunter.server.ServerMain;
 import com.wordhunter.server.ServerState;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.*;
-import java.util.concurrent.Semaphore;
+import java.util.Objects;
 
 
 /**
@@ -33,52 +22,28 @@ interface MessageMethod
     void method(ClientListening parent, String input);
 }
 
-
-/**
- * send empty message as heartbeat
- */
-class HeartBeat extends TimerTask {
-    public void run() {
-        try
-        {
-            ClientMain.sendMsgToServer("");
-        }
-        catch (IOException e)
-        {
-            System.out.println("failed to send heartbeat");
-        }
-    }
-}
-
-
-
-
 /**
  * ClientMain
- *
  * main class handling opening server/connection
  */
 public class ClientMain
 {
     private static ClientMain clientMainInstance = null;
-    // server/connection variables
-    public static final int reconnectMaxAttempt = 5;
-    public static int reconnectAttempts = 0;
 
+    // server/connection variables
+    public static int reconnectAttempts = 0;
     public ServerPageController serverPageController;
     public WinnerPageController winnerPageController;
-
     public String serverIP;
     public static Socket sock;              // socket connected to server
+    private static final String DEFAULT_HOST = "localhost";
 
     // game variables
     public String username;
-    public static String colorId = "";       // leave this empty
+    public static String colorId = "";
     public static WordList wordsList;
-    public Vector<Player> players;
 
-
-    // Singleton
+    // Singleton; each client should only have one ClientMain
     public static ClientMain getInstance() {
         if (clientMainInstance == null) {
             try
@@ -100,7 +65,7 @@ public class ClientMain
 
     public void setAddress(String address) {
         if (Objects.equals(address, ""))
-            serverIP = "localhost";
+            serverIP = DEFAULT_HOST;
         else
             serverIP = address;
     }
@@ -151,10 +116,6 @@ public class ClientMain
         sendMsgToServer(message);
         ClientListening listenThread = new ClientListening(sock, this);
         listenThread.start();
-    }
-
-    public Vector<Player> getPlayerList(){
-        return players;
     }
 
     public String getServerIP(){

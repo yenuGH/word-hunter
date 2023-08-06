@@ -10,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
 
@@ -33,7 +32,7 @@ public class WinnerPageController {
 
     @FXML
     public ListView<ScoreListCell> scoreView;
-    private ObservableList<ScoreListCell> scoreViewList = FXCollections.observableList(new ArrayList<>());
+    private final ObservableList<ScoreListCell> scoreViewList = FXCollections.observableList(new ArrayList<>());
 
     @FXML
     public void initialize() {

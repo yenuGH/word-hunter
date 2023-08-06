@@ -22,8 +22,7 @@ import java.util.Objects;
  * can call removePlayer() from ServerAcceptClients
  */
 class PlayerThread extends Thread {
-    // change these to player class when implemented
-    private Player player;
+    private final Player player;
     private final int index;
     private final Socket sock;
 
@@ -39,11 +38,11 @@ class PlayerThread extends Thread {
      * @param aSock   client socket
      * @param anIndex index in clientSocks
      */
-    public PlayerThread(ServerAcceptClients aParent, Socket aSock, int anIndex, Player player) {
+    public PlayerThread(ServerAcceptClients aParent, Socket aSock, int anIndex, Player aPlayer) {
         parent = aParent;
         sock = aSock;
         index = anIndex;
-        this.player = player;
+        player = aPlayer;
 
         // setup message callbacks
         messageToCallback.put("", PlayerThread::handleHeartBeat);
@@ -122,7 +121,7 @@ class PlayerThread extends Thread {
      * @param input message from client
      */
     public void handleHeartBeat(String input) {
-        System.out.println("client " + index + " heartbeat"); // TODO: REMOVE
+        System.out.println("client " + index + " heartbeat");
         ServerMain.sendMessageToClient(sock, "");
     }
 
@@ -130,7 +129,7 @@ class PlayerThread extends Thread {
     {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int position = Integer.parseInt(tokenList[1]);
-        Word target = ServerMain.wordsList.get(position);
+        Word target = ServerMain.wordsList.get(position); // lock
         if (target == null) {
             return;
         }
@@ -142,7 +141,7 @@ class PlayerThread extends Thread {
         ServerMain.wordsList.set(target.getWordID(), null);
         System.out.println("Size of wordlist " + ServerMain.wordsList.getSize());
 
-        // Remove once word is done
+        // Remove word once it is done
         String removeWordMsg = "removeWord" + ServerMain.messageDelimiter
                                 + target.getWordID() + ServerMain.messageDelimiter
                                 + this.player.getScore();

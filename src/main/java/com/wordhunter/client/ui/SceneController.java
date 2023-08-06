@@ -1,11 +1,9 @@
 package com.wordhunter.client.ui;
 
-import com.wordhunter.client.logic.ClientMain;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -15,17 +13,12 @@ import java.util.Objects;
 public class SceneController {
     // components
     private Stage stage;
-    private Scene scene;
     public Parent root;
-    private ReconnectionOverlay reconnectionOverlay;
-
-    // device screen size
-    private double maxHeight;
-    private double maxWidth;
+    private final double maxWidth;
 
     // min size
-    private double minHeight = 400;
-    private double minWidth = 600;
+    private final double minHeight = 400;
+    private final double minWidth = 600;
 
     // controllers
     private static SceneController sceneController;
@@ -43,10 +36,8 @@ public class SceneController {
      */
     private SceneController()
     {
-        reconnectionOverlay = new ReconnectionOverlay();
-
+        // device screen size
         maxWidth = Screen.getPrimary().getVisualBounds().getWidth();
-        maxHeight = Screen.getPrimary().getVisualBounds().getHeight();
     }
 
     public void showStartPage() {
@@ -57,7 +48,6 @@ public class SceneController {
             e.printStackTrace();
         }
         Scene scene = new Scene(Objects.requireNonNull(root));
-        this.scene = scene;
 
         stage.setTitle("WordHunter");
         stage.setScene(scene);
@@ -89,7 +79,6 @@ public class SceneController {
             e.printStackTrace();
         }
         Scene scene = new Scene(Objects.requireNonNull(root));
-        this.scene = scene;
 
         stage.setScene(scene);
         stage.show();
@@ -105,7 +94,7 @@ public class SceneController {
             e.printStackTrace();
         }
         Scene scene = new Scene(Objects.requireNonNull(root));
-        this.scene = scene;
+        stage.close();
 
         stage.setScene(scene);
         stage.show();
@@ -122,7 +111,6 @@ public class SceneController {
             e.printStackTrace();
         }
         Scene scene = new Scene(Objects.requireNonNull(root));
-        this.scene = scene;
 
         stage.setScene(scene);
         stage.show();
@@ -149,33 +137,6 @@ public class SceneController {
         stage.setOnCloseRequest(t -> {
             Platform.exit();
             System.exit(0);
-        });
-    }
-
-    public void closeStage() {
-        stage.close();
-    }
-
-    /**
-     * toggleReconnectionOverlay()
-     * show/hide reconnection overlay
-     * @param show boolean
-     */
-    public void toggleReconnectionOverlay(boolean show)
-    {
-        Platform.runLater(() -> {
-            try
-            {
-                StackPane container = (StackPane) scene.getRoot();
-                if (show) {
-                    container.getChildren().add(reconnectionOverlay);
-                    // move focus away from all components (mainly text boxes)
-                    reconnectionOverlay.requestFocus();
-                } else {
-                    container.getChildren().remove(reconnectionOverlay);
-                }
-            }
-            catch (ClassCastException ignored){}
         });
     }
 }

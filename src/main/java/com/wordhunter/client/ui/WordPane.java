@@ -1,26 +1,21 @@
 package com.wordhunter.client.ui;
 
 import javafx.animation.FadeTransition;
-import javafx.animation.Transition;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.*;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 public class WordPane extends StackPane {
-    // Constant
     // Word font
     private static final Font FONT = new Font("Arial", 20);
     public static final String BORDER = "-fx-border-color: -border-color; -fx-border-width: 2;";
-    public static final Color DEFAULT_COLOR = Color.WHITE;
 
     // Member variables
-    // Represents character it has
+    // The word in the pane
     private String word;
-    // Current color a pane has
-    private Color currentColor = DEFAULT_COLOR;
     // Label
     private final Label label;
 
