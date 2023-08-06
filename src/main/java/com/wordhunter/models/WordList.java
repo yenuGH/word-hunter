@@ -1,13 +1,12 @@
 package com.wordhunter.models;
 
 import java.util.Arrays;
-import java.util.Vector;
 import java.util.concurrent.Semaphore;
 
 public class WordList {
-    private int size;
-    private Semaphore[] wordListLock;
-    private Word[] wordList;
+    private final int size;
+    private final Semaphore[] wordListLock;
+    private final Word[] wordList;
 
     public WordList(int size){
         this.size = size;
@@ -21,13 +20,12 @@ public class WordList {
         Arrays.fill(this.wordList, null);
     }
 
-    public boolean lock(int index){
-        try{
+    private void lock(int index){
+        try {
             this.wordListLock[index].acquire();
-            return true;
         }
         catch (Exception e){
-            return false;
+            e.printStackTrace();
         }
     }
 

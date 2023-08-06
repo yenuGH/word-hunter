@@ -331,7 +331,7 @@ class ClientListening extends Thread {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int position = Integer.parseInt(tokenList[1]);
 
-        Word reopened = ClientMain.wordsList.get(position);
+        Word reopened = ClientMain.wordsList.get(position); // lock
         if (reopened == null) {
             return;
         }

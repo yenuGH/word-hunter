@@ -37,11 +37,10 @@ class ServerAcceptClients extends Thread {
         colorIds.add("#8b5dc8"); // purple
         colorIds.add("#5dc866"); // green
         colorIds.add("#c8c15d"); // yellow
-        colorIds.add("#5d6fc8"); // blue
-        colorIds.add("#c85daf"); // pink
+        colorIds.add("#00ccff"); // cyan
         colorIds.add("#c87b5d"); // orange
+        colorIds.add("#c85daf"); // pink
     }
-
 
     /**
      * removePlayer()
@@ -57,7 +56,7 @@ class ServerAcceptClients extends Thread {
             try {
                 Player removedPlayer = ServerMain.playerList.remove(index);
                 colorIds.add(removedPlayer.getColor());
-                // store for allowing reconnect attempt
+                // store for allowing reconnection attempt
                 disconnectedPlayerList.add(removedPlayer);
 
                 // broadcast updated player list and color ids
@@ -146,9 +145,6 @@ class ServerAcceptClients extends Thread {
                     try {
                         playerColorListLock.acquire();
 
-                        // username + colorId pair match? (change later?)
-                        // kind of jank player matching; find a matching username and then see if the color matches
-                        // we should change this to use a UUID later
                         Optional<Player> foundPlayer = disconnectedPlayerList.stream()
                                 .filter(player -> player.getName().equals(msg[2]))
                                 .findFirst();
@@ -208,8 +204,6 @@ class ServerAcceptClients extends Thread {
 
     /**
      * handle disconnected players reconnecting. send updated data if game started
-     * TODO: test
-     *
      * @param username username
      * @param client   socket
      */

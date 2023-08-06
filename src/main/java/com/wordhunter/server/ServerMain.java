@@ -1,18 +1,5 @@
 package com.wordhunter.server;
 
-/*
-  ServerMain.java
-
-  main tcp server program:
-    - broadcast to clients
-    - send message to specific client
-    - listen/accept new connections for interval before game starts
-    - listen for messages from connected clients
-    - handle client disconnect
-    - broadcast on new client join
- */
-
-
 import com.wordhunter.conversion.PlayerConversion;
 import com.wordhunter.conversion.WordConversion;
 import com.wordhunter.models.Player;
@@ -20,10 +7,13 @@ import com.wordhunter.models.Word;
 import com.wordhunter.models.WordGenerator;
 import com.wordhunter.models.WordList;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.*;
-import java.util.concurrent.Semaphore;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.Vector;
 
 
 /**
@@ -35,8 +25,7 @@ interface ServerMessageMethod
 }
 
 class WordTimerTask extends TimerTask {
-
-    private Word currentWord;
+    private final Word currentWord;
 
     public WordTimerTask(Word word) {
         this.currentWord = word;
@@ -55,7 +44,6 @@ class WordTimerTask extends TimerTask {
     }
 }
 
-
 /**
  * program main entry point
  */
@@ -64,9 +52,9 @@ public class ServerMain extends Thread
     // const variables used in client too
     public final static int serverPort = 6666;
     public final static String messageDelimiter = "!";
-    public final static int clientLimit = 6; // update ServerAcceptClients.colorIds if you change
-    public final static int startGameTimeMin = 1; // change later
-    public final static int gameMaxTimeMin = 1; // change later
+    public final static int clientLimit = 6;
+    public final static int startGameTimeMin = 1;
+    public final static int gameMaxTimeMin = 1;
     public final static int heartBeatInterval = 5000; // in milliseconds
 
 
@@ -83,7 +71,7 @@ public class ServerMain extends Thread
 
     public ServerMain()
     {
-        this.wordsList = new WordList(WordGenerator.dimension);
+        wordsList = new WordList(WordGenerator.dimension);
     }
 
     /**
@@ -103,7 +91,6 @@ public class ServerMain extends Thread
         try
         {
             timerStartTime = System.nanoTime();
-            // TODO: CHANGE THIS TIMER BACK TO 60; it's 15 for testing
             Thread.sleep(startGameTimeMin * 15000);
             ServerMain.serverState = ServerState.GAME_IN_PROGRESS;
         }
@@ -143,8 +130,6 @@ public class ServerMain extends Thread
         }
 
         broadcast("gameOver" + ServerMain.messageDelimiter + PlayerConversion.fromPlayers(ServerMain.playerList));
-        // TODO: clean up sockets (from client side? add option to start new game?)
-        //System.exit(0);
     }
 
     /**

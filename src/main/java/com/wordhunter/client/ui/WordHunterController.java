@@ -55,7 +55,6 @@ public class WordHunterController {
         // Make a border
         grids.setStyle(WordPane.BORDER);
 
-        // TODO: start the timer of each word and animation of each word
         for (int row = 0; row < grids.getRowCount(); row++) {
             for (int column = 0; column < grids.getColumnCount(); column++) {
                 WordPane pane = new WordPane("");
@@ -65,7 +64,7 @@ public class WordHunterController {
         }
 
         for (int i=0; i< wordsList.getSize(); i++) {
-            Word word = wordsList.get(i);
+            Word word = wordsList.get(i); // lock
             if (word != null) {
                 setWordPaneText(word);
                 startAnimation(word);
