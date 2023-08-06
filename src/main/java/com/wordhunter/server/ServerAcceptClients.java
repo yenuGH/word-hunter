@@ -137,25 +137,6 @@ class ServerAcceptClients extends Thread {
                         newPlayerJoinHandle(msg[1], client);
                     }
                 }
-                // user reconnect (doesn't work if entire application closed)
-                else if (ServerMain.serverState != ServerState.GAME_END
-                        && Objects.equals(msg[0], "reconnect")
-                        && Objects.equals(msg[1], "username")
-                        && Objects.equals(msg[3], "colorId")) {
-                    try {
-                        playerColorListLock.acquire();
-
-                        Optional<Player> foundPlayer = disconnectedPlayerList.stream()
-                                .filter(player -> player.getName().equals(msg[2]))
-                                .findFirst();
-                        if (foundPlayer.isPresent() && foundPlayer.get().getColor().equals(msg[4])) {
-                            disconnectedPlayerList.remove(foundPlayer);
-                            reconnectHandle(msg[2], client);
-                        }
-                        playerColorListLock.release();
-                    } catch (InterruptedException ignored) {
-                    }
-                }
             }
         } catch (IOException e) // called when server socket closed from outside thread
         {
@@ -201,35 +182,4 @@ class ServerAcceptClients extends Thread {
         } catch (InterruptedException ignored) {
         }
     }
-
-    /**
-     * handle disconnected players reconnecting. send updated data if game started
-     * @param username username
-     * @param client   socket
-     */
-    private void reconnectHandle(String username, Socket client) {
-        int playerCount = ServerMain.playerList.size() + 1;
-        System.out.println("re-adding " + username + " as player " + playerCount);
-
-        Player newPlayer = new Player(username, colorIds.remove(0), client);
-        // add player to list and create listening thread
-        ServerMain.playerList.add(
-                newPlayer
-        );
-        PlayerThread newPlayerThread = new PlayerThread(this, client, playerCount - 1, newPlayer);
-        newPlayerThread.start();
-
-        // broadcast reconnected player username + colorId
-        ServerMain.broadcast("reconnect" + ServerMain.messageDelimiter
-                + "username" + ServerMain.messageDelimiter
-                + username + ServerMain.messageDelimiter);
-
-        // if game already started
-        if (ServerMain.serverState == ServerState.GAME_IN_PROGRESS) {
-            // send to reconnected client updated health + current words + word timers + game timer + player list + color ids
-            String msg = "updated data here";
-            ServerMain.sendMessageToClient(client, msg);
-        }
-    }
-
 }
