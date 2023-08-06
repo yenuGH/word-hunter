@@ -57,7 +57,6 @@ public class WordPane extends StackPane {
     // Give the color flush animation
     // The background color oscillate in given interval in millisecond
     public void initAnimation(long interval){
-        System.out.println("Interval: " + interval);
         if (animation != null) {
             closeAnimation();
         }

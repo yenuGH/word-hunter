@@ -43,7 +43,6 @@ class ClientListening extends Thread {
 
         // set up callback map
         messageToCallback.put("newPlayerJoin", ClientListening::newPlayerJoin);
-        messageToCallback.put("playerDisconnect", ClientListening::playerDisconnect);
         messageToCallback.put("error", ClientListening::error);
 
         messageToCallback.put("startTimer", ClientListening::updateStartTimer);
@@ -153,14 +152,6 @@ class ClientListening extends Thread {
     }
 
     /**
-     * playerDisconnect()
-     * @param input message from server
-     */
-    public void playerDisconnect(String input) {
-        System.out.println("playerDisconnect running:" + input);
-    }
-
-    /**
      * error()
      * @param input message from server
      */
@@ -173,6 +164,11 @@ class ClientListening extends Thread {
         System.exit(0);
     }
 
+    /**
+     * displayGameScreen()
+     * go to main game page
+     * @param input message from server
+     */
     public void displayGameScreen(String input) {
         Platform.runLater(() -> {
             this.wordHunterController = SceneController.getInstance().showGamePage();
@@ -272,6 +268,7 @@ class ClientListening extends Thread {
         {
             return;
         }
+        // update UI score
         Platform.runLater(() -> {
             if (removed.getColor().equals(ClientMain.colorId)) {
                 if (wordHunterController != null && score > 0) {
@@ -279,9 +276,11 @@ class ClientListening extends Thread {
                 }
             }
         });
+        // remove word from list
         ClientMain.wordsList.release(removedWordId);
         ClientMain.wordsList.set(removedWordId, null);
 
+        // remove word from UI
         Platform.runLater(() -> {
             if (wordHunterController != null)
             {
@@ -309,6 +308,7 @@ class ClientListening extends Thread {
         reserved.setState(WordState.RESERVED);
         reserved.setColor(color);
 
+        // change word color to player color, set current player reserved word
         Platform.runLater(() -> {
             if (wordHunterController != null) {
                 wordHunterController.setWordPaneTextColor(reserved);
@@ -331,6 +331,7 @@ class ClientListening extends Thread {
         String[] tokenList = input.split(ServerMain.messageDelimiter);
         int position = Integer.parseInt(tokenList[1]);
 
+        // open word and reset color
         Word reopened = ClientMain.wordsList.get(position); // lock
         if (reopened == null) {
             return;
@@ -338,6 +339,7 @@ class ClientListening extends Thread {
         reopened.setState(WordState.OPEN);
         reopened.setColor(ServerMain.defaultColor);
 
+        // update UI
         Platform.runLater(() -> {
             if (wordHunterController != null) {
                 wordHunterController.clearWordPaneColor(reopened);

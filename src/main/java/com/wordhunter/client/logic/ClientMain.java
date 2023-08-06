@@ -31,7 +31,6 @@ public class ClientMain
     private static ClientMain clientMainInstance = null;
 
     // server/connection variables
-    public static int reconnectAttempts = 0;
     public ServerPageController serverPageController;
     public WinnerPageController winnerPageController;
     public String serverIP;
@@ -91,27 +90,14 @@ public class ClientMain
      * connectServer()
      * establishes connection to server with entered ip. sends message with username.
      *        server responds with time left until game start and playerList + colorId list
-     * @param reconnect true/false
      */
-    public void connectServer(boolean reconnect) throws IOException
+    public void connectServer() throws IOException
     {
         sock = new Socket(serverIP, ServerMain.serverPort);
         sock.setSoTimeout(5000);
 
         String message = "username" + ServerMain.messageDelimiter
                 + username;
-        if(reconnect && !colorId.isEmpty())
-        {
-            reconnectAttempts++;
-            message = "reconnect" + ServerMain.messageDelimiter
-                    + message + ServerMain.messageDelimiter
-                    + "colorId" + ServerMain.messageDelimiter
-                    + colorId;
-        }
-        else
-        {
-            reconnectAttempts = 0;
-        }
 
         sendMsgToServer(message);
         ClientListening listenThread = new ClientListening(sock, this);

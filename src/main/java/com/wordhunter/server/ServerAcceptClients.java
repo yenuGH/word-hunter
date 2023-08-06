@@ -21,12 +21,8 @@ import java.util.concurrent.TimeUnit;
  */
 class ServerAcceptClients extends Thread {
     public ServerSocket sock = null;                        // server socket
-
     private final Vector<String> colorIds = new Vector<>();       // colors assigned to players
-
     private final Semaphore playerColorListLock = new Semaphore(1);
-
-    private final Vector<Player> disconnectedPlayerList = new Vector<>();
 
     /**
      * ServerAcceptClients()
@@ -56,8 +52,6 @@ class ServerAcceptClients extends Thread {
             try {
                 Player removedPlayer = ServerMain.playerList.remove(index);
                 colorIds.add(removedPlayer.getColor());
-                // store for allowing reconnection attempt
-                disconnectedPlayerList.add(removedPlayer);
 
                 // broadcast updated player list and color ids
                 ServerMain.broadcast("playerDisconnect" + ServerMain.messageDelimiter
@@ -70,9 +64,7 @@ class ServerAcceptClients extends Thread {
             catch (ArrayIndexOutOfBoundsException e){
                 System.out.println("Game has already ended, no players to remove.");
             }
-
-        } catch (InterruptedException ignored) {
-        }
+        } catch (InterruptedException ignored) {}
     }
 
     /**

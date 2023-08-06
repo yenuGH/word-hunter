@@ -34,7 +34,7 @@ public class StartPageController {
 
         try {
             clientMain.createServer();
-            clientMain.connectServer(false);
+            clientMain.connectServer();
 
             SceneController.getInstance().showWaitingPage();
         } catch (InterruptedException | IOException ex) {
@@ -54,7 +54,7 @@ public class StartPageController {
         String address = ipAddressField.getText();
         clientMain.setAddress(address);
         try {
-            clientMain.connectServer(false);
+            clientMain.connectServer();
             SceneController.getInstance().showWaitingPage();
         } catch (IOException ex) {
             this.label.setText("Invalid IP Address!");

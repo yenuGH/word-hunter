@@ -110,13 +110,3 @@ Label
     -fx-background-color: transparent;
     -fx-padding: 0 7;
 }
-
-/* reconnection overlay values*/
-.progress-indicator:indeterminate > .spinner
-{
-    -fx-background-color: transparent;
-}
-.progress-bar > .bar
-{
-    -fx-background-color: red;
-}

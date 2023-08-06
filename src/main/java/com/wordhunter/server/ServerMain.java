@@ -45,7 +45,7 @@ class WordTimerTask extends TimerTask {
 }
 
 /**
- * program main entry point
+ * server main entry point
  */
 public class ServerMain extends Thread
 {
@@ -53,6 +53,7 @@ public class ServerMain extends Thread
     public final static int serverPort = 6666;
     public final static String messageDelimiter = "!";
     public final static int clientLimit = 6;
+
     public final static int startGameTimeMin = 1;
     public final static int gameMaxTimeMin = 1;
     public final static int heartBeatInterval = 5000; // in milliseconds

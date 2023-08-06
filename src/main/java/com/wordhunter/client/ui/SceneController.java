@@ -1,5 +1,6 @@
 package com.wordhunter.client.ui;
 
+import com.wordhunter.client.logic.ClientMain;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -32,7 +33,7 @@ public class SceneController {
 
     /**
      * SceneController()
-     * constructor. initializes reconnection overlay and max width/height
+     * constructor. initializes max width
      */
     private SceneController()
     {

@@ -78,7 +78,6 @@ class PlayerThread extends Thread {
                 }
             } catch (IOException e) // disconnect
             {
-                e.printStackTrace();
                 try {
                     disconnect();
                     System.out.println("Player" + (index + 1) + " disconnected");
