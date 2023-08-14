@@ -16,4 +16,4 @@ Word Hunter is a competitive multiplayer game where the objective is to quickly 
 ![img](https://github.com/kevinchen2002/word-hunter/assets/74112997/bae54048-ff6e-4eb9-bb9a-5aaa00e2daa4)
 
 ## Demo:
-https://youtu.be/6yUqHYe7alE
+[https://youtu.be/6yUqHYe7alE](https://www.youtube.com/watch?v=7POG2kfoiaQ)https://www.youtube.com/watch?v=7POG2kfoiaQ
